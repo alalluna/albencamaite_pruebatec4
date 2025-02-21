@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,16 +43,3 @@ public class HotelBookingDTO {
     private List<User> guests = new ArrayList<>();
 
 }
-//{
-//        "dateFrom" : "05/04/2024",
-//        "dateTo" : "09/04/2024",
-//        "nights" : 4
-//        "place" : "Barcelona",
-//        "hotelCode" : "MT-0003",
-//        "peopleQ" : 2,
-//        "roomType" : "Double",
-//        "hosts" : [
-//        {datos persona 1},
-//        {datos persona 2}
-//        ]
-//        }

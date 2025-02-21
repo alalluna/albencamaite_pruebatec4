@@ -9,5 +9,4 @@ public class HotelServiceException extends RuntimeException {
         super(message);
         this.error = new ErrorDTO(message, code);
     }
-
 }

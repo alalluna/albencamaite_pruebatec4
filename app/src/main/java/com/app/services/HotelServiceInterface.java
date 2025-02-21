@@ -14,5 +14,4 @@ public interface HotelServiceInterface {
 
     //conversores
     HotelDTO mapToDTO(Hotel hotel);
-
 }

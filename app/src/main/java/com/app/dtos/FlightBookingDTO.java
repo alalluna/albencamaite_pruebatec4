@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,15 +38,3 @@ public class FlightBookingDTO {
     @JsonProperty("passengers")
     private List<User> clients= new ArrayList<>();
 }
-//{
-//        "date" : "12/04/2024",
-//        "Origin" : "Buenos Aires"
-//        "destination" : "Barcelona",
-//        "flightCode" : "BUBA-3369",
-//        "peopleQ" : 2,
-//        "seatType" : "Economy",
-//        "passengers" : [
-//        {datos persona 1},
-//        {datos persona 2}
-//        ]
-//        }

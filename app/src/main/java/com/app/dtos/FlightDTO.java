@@ -36,12 +36,3 @@ public class FlightDTO {
     @JsonProperty("date")
     private LocalDate dateFrom; //“dd/mm/yyyy”
 }
-//{
-//        "flightNumber": “String”,
-//        "name": “String”,
-//        "origin": “String”,
-//        "destination": “String”,
-//        "seatType": “String”,
-//        "flightPrice": Double,
-//        "date": “dd/mm/yyyy”,
-//        }

@@ -1,6 +1,5 @@
 package com.app.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,5 +19,4 @@ public class User {
     private String completeName;
 
     private String contact;
-
 }

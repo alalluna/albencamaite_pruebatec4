@@ -18,7 +18,7 @@ public class HotelController {
     HotelServiceInterface service;
 
     //GET: localhost:8080/agency/hotels → Todos los hoteles
-    @GetMapping("/hotels")
+    @GetMapping({"/hotels","/hotels/"})
     public ResponseEntity<List<HotelDTO>> all(){
         List<HotelDTO>  listOfObjects = service.list();
         return ResponseEntity.ok(listOfObjects);
@@ -26,15 +26,14 @@ public class HotelController {
 
     //GET: localhost:8080/agency/hotels/{id} → Hotel en particular
     @GetMapping("/hotels/{id}")
-        public ResponseEntity<HotelDTO> findById(@PathVariable Long id){
-            HotelDTO object = service.findOne(id);
-            return ResponseEntity.ok(object);
-        }
+    public ResponseEntity<HotelDTO> findById(@PathVariable Long id){
+        HotelDTO object = service.findOne(id);
+        return ResponseEntity.ok(object);
+    }
+
     //POST: /agency/hotels/new
 
     //PUT: localhost:8080/agency/hotels/edit/{id}
 
     // DELETE: localhost:8080/agency/hotels/delete/{id}
-
-
 }
