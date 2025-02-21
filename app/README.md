@@ -27,9 +27,25 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 ## DTOS
     - ErrorDTO.java
     - FlightDTO.java
-    - Hotel.java
+    - HotelDTO.java
+    - HotelBookingDTO.java
+    - FlightBookingDTO.java
+
 ## CONFIG
     - SecurityConfig.java (aun por gestionar)
+
+## CONTROLLERS
+    - HotelController.java
+    - FlightController.java
+## REPOSITORIES
+    - HotelRepositoryInterface
+    - FlightRepositoryInterface
+## SERVICES
+    - HotelServiceInterface
+    - HotelService (parto de que aqui deben de verse todos los hoteles registrados disponibles)
+    - HotelServiceException
+    - FlightServiceInterface
+    - FlightService (hago lo mismo con vuelos)
 
 
 ✅ 

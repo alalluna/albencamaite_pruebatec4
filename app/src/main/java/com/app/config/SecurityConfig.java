@@ -14,12 +14,14 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filtrerChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.POST, "/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/**").authenticated()
                 ).formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .httpBasic(httpBasic -> httpBasic.realmName("app"))
                 .build();

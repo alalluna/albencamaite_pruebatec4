@@ -1,5 +1,6 @@
 package com.app.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,4 @@ public class ErrorDTO {
 
     private String message;
     private int code;
-    private LocalDateTime timestamp;
 }

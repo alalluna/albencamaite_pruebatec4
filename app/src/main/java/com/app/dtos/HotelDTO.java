@@ -1,10 +1,13 @@
 package com.app.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -27,11 +30,16 @@ public class HotelDTO {
     private Double price;
 
     @JsonProperty("disponibilityDateFrom")
-    private String dateFrom;//“dd/mm/yyyy”
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate dateFrom;//“dd/mm/yyyy”
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @JsonProperty("disponibilityDateTo")
-    private String dateTo;//“dd/mm/yyyy”
+    private LocalDate dateTo;//“dd/mm/yyyy”
 
+    //si empieza por is necesita la etiqueta aunque sea el mismo nombre
+    //jacson hace esto
+    @JsonProperty("isBooked")
     private boolean isBooked;
 }
 //

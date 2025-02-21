@@ -1,6 +1,7 @@
 package com.app.dtos;
 
 import com.app.entities.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FlightBookingDTO {
     @JsonProperty("date")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateFrom;
 
     @JsonProperty("Origin")

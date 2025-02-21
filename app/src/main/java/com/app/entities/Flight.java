@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,7 +23,7 @@ public class Flight {
     private String cityFrom;
     private String cityDestination;
     private String typeOfSeat;
-    private Integer prize;
+    private Double prize;
     private LocalDate dateFrom;
 
     //este es para las reservas, si esta reservado se verá si,
@@ -33,4 +35,6 @@ public class Flight {
 
     //lista de pasajeros
 
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    private List<FlightBooking> bookings = new ArrayList<>();
 }
