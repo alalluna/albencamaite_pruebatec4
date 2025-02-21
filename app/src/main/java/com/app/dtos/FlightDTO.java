@@ -1,5 +1,6 @@
 package com.app.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,13 +11,26 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FlightDTO {
-    private String flightNumber;
-    private String name;
-    private String origin;
-    private String destination;
-    private String seatType;
-    private Double flightPrice;
-    private String date; //“dd/mm/yyyy”
+    @JsonProperty("flightNumber")
+    private String code;
+
+    @JsonProperty("name")
+    private String flightName;
+
+    @JsonProperty("origin")
+    private String cityFrom;
+
+    @JsonProperty("destination")
+    private String cityDestination;
+
+    @JsonProperty("seatType")
+    private String typeOfSeat;
+
+    @JsonProperty("flightPrice")
+    private Double price;
+
+    @JsonProperty("date")
+    private String dateFrom; //“dd/mm/yyyy”
 }
 //{
 //        "flightNumber": “String”,

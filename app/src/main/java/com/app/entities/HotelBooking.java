@@ -1,11 +1,12 @@
 package com.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +22,15 @@ public class HotelBooking {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     private Hotel hotel;
 
     @ManyToOne
-    private User bookingUser; // Usuario que hizo la reserva
+    @JsonBackReference
+    private User employee; // Usuario que hizo la reserva
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<User> guests = new ArrayList<>(); // Lista de huéspedes
 
     private LocalDate checkInDate;

@@ -15,7 +15,7 @@ public class HotelDTO {
     private String code;
 
     @JsonProperty("name")
-    private String hotel;
+    private String hotelName;
 
     @JsonProperty("place")
     private String city;

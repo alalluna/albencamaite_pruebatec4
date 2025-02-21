@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -20,12 +17,12 @@ public class Hotel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String code;
-    private String hotel;
+    private String hotelName;
     private String city;
     private String typeRoom;
-    private Double prize;
-    private LocalDate dateFrom;
-    private LocalDate dateTo;
+    private Double price;
+    private LocalDate from;
+    private LocalDate to;
 
     //este es para las reservas, si esta reservado se verá si,
     // si esta dispobile se vera no, ejecutar una reerva sera buscar por id
