@@ -12,7 +12,7 @@ public interface HotelServiceInterface {
     HotelDTO update(Long id,  HotelDTO hotelDTO);
     void delete(Long id);
 
-    //validaciones
+//    //validaciones
     void validateDTO(HotelDTO hotelDTO);
     void validateAvailability(Hotel hotel, Long id);
     void validateNonBooked(Hotel hotel,Long id);
@@ -23,6 +23,7 @@ public interface HotelServiceInterface {
     //auxiliares
     List<Hotel> getTrueList();
     boolean compareObjects(Hotel object1, Hotel object2);
+    void updateHotelData(Hotel hotel, HotelDTO hotelDTO);
 
     //conversores
     HotelDTO mapToDTO(Hotel hotel);

@@ -48,17 +48,25 @@ public class HotelService implements HotelServiceInterface {
     public HotelDTO create(HotelDTO hotelDTO) {
         validateDTO(hotelDTO);
         validateDates(hotelDTO);
-
         Hotel hotel = mapToEntity(hotelDTO);
-
         validateNonDuplicateHotel(hotel);
+        hotel.setBooked(false);
         Hotel savedObject = repository.save(hotel);
         return mapToDTO(savedObject);
     }
 
     @Override
     public HotelDTO update(Long id, HotelDTO hotelDTO) {
-        return null;
+        Hotel hotel = repository.findById(id)
+                .orElseThrow(() -> new HotelServiceException("Habitación " + id +" no encontrada", HttpStatus.NOT_FOUND.value()));
+
+        validateAvailability(hotel, id);
+        //la siguiente linea se podría obviar teniendo en cuenta que alguien que haya hecho una reserva,
+        // podria querer modificarla, aunque tb se podria eliminar y crear una nueva(lo dejo porque es un requisito)
+        validateNonBooked(hotel, id);
+        updateHotelData(hotel, hotelDTO);
+        Hotel updatedObject = repository.save(hotel);
+        return mapToDTO(updatedObject);
     }
 
     @Override
@@ -68,7 +76,7 @@ public class HotelService implements HotelServiceInterface {
                 .orElseThrow(() -> new HotelServiceException("Habitación " + id + " no encontrada", HttpStatus.NOT_FOUND.value()));
 
         validateAvailability(hotel, id);
-
+        validateNonBooked(hotel, id);
         hotel.setAvailable(false);
         repository.save(hotel);
     }
@@ -107,7 +115,7 @@ public class HotelService implements HotelServiceInterface {
     @Override
     public void validateNonBooked(Hotel hotel,Long id){
         if (hotel.isBooked()) {
-            throw new HotelServiceException("Habitación " + id +" no disponible actualmente", HttpStatus.NOT_FOUND.value());
+            throw new HotelServiceException("Habitación " + id +" reservada, si desea eliminarla debera cancelar/modificar la reserva", HttpStatus.NOT_FOUND.value());
         }
     }
 
@@ -127,6 +135,7 @@ public class HotelService implements HotelServiceInterface {
         }
     }
 
+    //auxiliares
     @Override
     public boolean compareObjects(Hotel object1, Hotel object2) {
         return object1.getHotelName().equalsIgnoreCase(object2.getHotelName()) &&
@@ -145,6 +154,16 @@ public class HotelService implements HotelServiceInterface {
                 .toList();
     }
 
+    @Override
+    public void updateHotelData(Hotel hotel, HotelDTO hotelDTO) {
+        hotel.setHotelName(hotelDTO.getHotelName());
+        hotel.setCity(hotelDTO.getCity());
+        hotel.setTypeRoom(hotelDTO.getTypeRoom());
+        hotel.setPrice(hotelDTO.getPrice());
+        hotel.setDateFrom(hotelDTO.getDateFrom());
+        hotel.setDateTo(hotelDTO.getDateTo());
+        hotel.setBooked(hotelDTO.isBooked());
+    }
     //conversores
     @Override
     public HotelDTO mapToDTO(Hotel hotel) {
@@ -171,7 +190,7 @@ public class HotelService implements HotelServiceInterface {
                 hotelDTO.getPrice(),
                 hotelDTO.getDateFrom(),
                 hotelDTO.getDateTo(),
-                hotelDTO.isBooked(),
+                hotelDTO.isBooked(),//como no se aun como gestionar las reservas lo dejo asi pero tb podría ser false
                 true, // pongo el boleano Available por defecto
                 new ArrayList<>()
         );

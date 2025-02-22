@@ -47,6 +47,15 @@ public class HotelController {
         }
     }
     //PUT: localhost:8080/agency/hotels/edit/{id}
+    @PutMapping("/hotels/edit/{id}")
+    public ResponseEntity<?>update(@PathVariable Long id, @RequestBody HotelDTO hotelDTO){
+        try{
+            HotelDTO object = service.update(id, hotelDTO);
+            return ResponseEntity.ok(object);
+        }catch (HotelServiceException e){
+            return serviceExceptions(e);
+        }
+    }
 
     // DELETE: localhost:8080/agency/hotels/delete/{id}
     //no se si puedo poner delete, ya que es un eliminado logico no de verdad,

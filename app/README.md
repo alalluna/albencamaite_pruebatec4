@@ -1,11 +1,14 @@
 # 🚀 API REST FOR TRAVEL AGENCY
 
-## 1️⃣ Descripcion general 🐳
+## DESCRIPCION GENERAL 🐳
 
 Una agencia de turismo desea llevar a cabo el desarrollo de una aplicación que le permita recibir solicitudes de reservas para los diferentes tipos de 
 paquetes que ofrece. Por el momento los dos servicios con los que cuenta son el de búsqueda y reserva de hoteles y búsqueda y reserva de vuelos.
 
+
 🔗 herramientas: Java, Spring Boot, Testing, JPA + Hibernate, Spring Security, lombock , mysql, postman.
+
+
 🔍 Observaciones: Las operaciones y las relaciones estan centradas en la reserva de habitaciones y vuelos que disfrutan x usuarios
   Por lo que a parte de crear usuarios, hoteles y vuelos, debo establecer una logica relacion para las reservas.
   He pensando en una agencia de verdad, como sería su programa, existen claramente dos areas: las reservas de habitaciones y vuelos. 
@@ -16,9 +19,10 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 
 ---
 
-📂 Archivos
+📂 ARCHIVOS
 
 ---
+
 ## ENTIDADES
 
     - Hotel.java
@@ -35,7 +39,7 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
     - FlightBookingDTO.java
 
 ## CONFIG
-    - SecurityConfig.java
+    - SecurityConfig.java 🚦 
 
 ## CONTROLLERS
     - HotelController.java
@@ -54,38 +58,52 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
     - FlightServiceException
 ---
 
-✅ 
-🚦 
-
-## 2️⃣ Explicación de la lógica de negocio
+## lÓGICA DE NEGOCIO
 
  ### METODOS LIST: listan objetos "habilitados" (Se muestran los habilitados y disponibles para las reservas) 
-      Si la lista esta vacia lanza excepcion y el controlador devuelve el ErroDTO
+    Si la lista esta vacia lanza excepcion y el controlador devuelve el ErroDTO
 
  ### METODOS FINDONE: muestran un objeto "habilitados" y disponible 
-      Si no lanza excepciones : si no existe en bbdd, si no esta habilitada o si ya esta reservada
+    Si no lanza excepciones : si no existe en bbdd, si no esta habilitada o si ya esta reservada
 
 ### METODOS DELETE: cambiara el boleano Available a false para que quede en la base de datos
-      Si no existe el objeto lanza excepción, si existe y ya está inhabilitado tambien
-      No estoy segura pero creo que si no se elimina de verdad no puedo poner @Deletemapping
+    Si no existe el objeto lanza excepción, si existe y ya está inhabilitado tambien
+    No estoy segura pero creo que si no se elimina de verdad no puedo poner @Deletemapping
+
+### METODOS CREATE: Se validan campos y se guarda un objeto nuevo Flight o Hotel
+    si hay datos null o en blanco , se devuelve una excepcion, 
+    si las fechas no son adecuadas( son pasadas o la vuelta es pasada a la ida) tambien.
+    una vez se mapea al objeto se valida que no haya otro igual en la base de datos 
+    se setea el booked en false, para dejarlo disponible a las reservas.
  🎉
 
 ---
-###  Correcciones necesarias📄
 
-- Al escoger como nombre de los parametros IsAvailable , sin saberlo, me ha dado muchos problemas, aunque ayer iba , hoy no. 
-Era un problema de conflictos con jacson que tiene esa palabra reservada por lo que he renombrado los parametros isAvailable por available.
-Y por si acaso tambien isBooked por booked
-- Tambien tuve problemas con ErrorDTO, no lo usaba correctamente , ya que este es el que devuelve el json y cre que ha de estar en el controllador.
-He cambiado los exception que tenian varios constructores y replanteado como devolver un errorDTO en controller para no repetir codigo.
-- Ahora mis exceciones personalizadas recogen el error y el controller devuelve datos si no hay excepcion y si hay excepcion devuelve un ErroDTO.
+###  CORRECCIONES NECESARIAS📄
 
-### 5 subtitulos enumerados con icono herramientas 🛠️
+- Al escoger como nombre de los parametros IsAvailable , sin saberlo, me ha dado muchos problemas (aunque ayer iba, hoy no). 
+  Era un problema de conflictos con jacson que tiene esa palabra reservada por lo que he renombrado los parametros isAvailable por available.
+  Y por si acaso tambien isBooked por booked.
+
+- Tambien tuve problemas con ErrorDTO, no lo usaba correctamente , ya que este es el que devuelve el json y creO que ha de estar en el controllador.
+  He cambiado los exceptions que tenian varios constructores y replanteado como devolver un errorDTO en controller para no repetir codigo.
+  Ahora mis exceciones personalizadas recogen el error y el controller devuelve datos si no hay excepcion y si hay excepcion devuelve un ErroDTO.
+
+- Se supone que los precios deben devolverse en forma de string pero no recuerdo ninguna anotacion que lo hicera string y le hago  
+  **`hotel.getPrice().toString(),`**   y no funciona. De momento lo dejaré asi, mas tarde ya veo como lo transformo
+
+- Despues de crear validadiones y metodos auxiliares para reducir la logitud de los metodos, los he probado y funciona.
+  Aunque podría hacer mas, veo que hay suficientes para los crud, mas tarde tendre que añadir alguno mas para las reservas.
+  paso crear update donde podré reciclar algunos de estos metodos auxiliares y validaciones.
+
+
+---
+### TEST UNITARIO 🛠️
 
 ---
 ###  🏃‍♂️
 
-para resaltar **`algo`**   
+para resaltar 
 listar
 1.
 2. 
@@ -107,14 +125,8 @@ aqui va el codigo
 ¡Felicidades! 🎉ya tienes tu marckdown 🐳🔥
 
 Historias de usuario de Hoteles y habitaciones
-User Story Nº 1: Obtener un listado de todos los hoteles registrados
 
-Método GET
-
-
-✅ Path: /agency/hotels
-
-✅ User Story Nº 2: Obtener un listado de todos los habitaciones disponibles en un determinado rango de fechas y según el destino seleccionado.
+User Story Nº 2: Obtener un listado de todos los habitaciones disponibles en un determinado rango de fechas y según el destino seleccionado.
 
 Método GET
 
@@ -124,7 +136,6 @@ Path: /agency/rooms?dateFrom=dd/mm/aaaa&dateTo=dd/mm/aaaa&destination="nombre_de
 User Story Nº 3: Realizar una reserva de un habitación, indicando cantidad de personas, fecha de entrada, fecha de salida y tipo de habitación. Obtener como respuesta el monto total de la reserva realizada
 
 Método POST
-
 
 Path: /agency/room-booking/new
 
@@ -137,11 +148,6 @@ Path: /agency/room-booking/new
 
 Historias de usuario de Vuelos
 ✅ User Story Nº 4: Obtener un listado de todos los vuelos registrados
-
-Método GET
-
-
-✅ Path: /agency/flights
 
 User Story Nº 5: Obtener un listado de todos los vuelos disponibles para una fecha de ida y su correspondiente fecha de vuelta, según el destino y el origen seleccionados (mostrar tanto los de ida como los de vuelta).
 
@@ -165,43 +171,19 @@ Path: /agency/flight-booking/new
 
 
 Historias de Usuario generales
-User Story Nº 7: Permitir la realización de operaciones de alta, baja y modificación sobre una base de datos tanto para la gestión de vuelos como para la gestión de hoteles a los empleados de la agencia que se encuentren AUTENTICADOS. Las operaciones de lectura deben estar disponibles tanto para empleados autenticados como para público en general (usuarios).
-
-
-Métodos GET, POST, PUT y DELETE
-
+User Story Nº 7: Permitir la realización de operaciones modificación 
 
 Paths Hoteles:
-
-
-POST: /agency/hotels/new
 PUT: /agency/hotels/edit/{id}
-DELETE: /agency/hotels/delete/{id}
-✅ GET: /agency/hotels/{id} → Hotel en particular
-✅ GET: /agency/hotels → Todos los hoteles
-
-
 
 Paths Vuelos:
-
-POST: /agency/flights/new
 PUT: /agency/flights/edit/{id}
-DELETE: /agency/flights/delete/{id}
-✅ GET: /agency/flights/{id} → Vuelo en particular
-✅ GET: /agency/flights → Todos los vuelos
-
 
 Validaciones necesarias (básicas)
 
 
-Para bajas y modificaciones debe existir el hotel, reserva, habitación o vuelo correspondiente. Caso contrario, se debe retornar el correspondiente status code y msje.
-
-
-Para altas, validar que no exista anteriormente una reserva con idénticas características.
-
-
-Antes de dar de baja un vuelo o un hotel, validar que no se encuentre actualmente en una reserva. En caso de que sea así, no se podrá eliminar el registro, sin antes haber cancelado/eliminado la reserva.
-
+En modificaciones debe existir el hotel, reserva, habitación o vuelo correspondiente. 
+Caso contrario, se debe retornar el correspondiente status code y msje.
 
 Cualquier validación extra necesaria o complementaria que se considere necesaria puede ser implementada sin problema alguno.
 
