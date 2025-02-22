@@ -37,14 +37,22 @@ public class HotelController {
     }
 
     //POST: /agency/hotels/new
-
+    @PostMapping("/hotels/new")
+    public ResponseEntity<?> create(@RequestBody HotelDTO hotelDTO){
+        try{
+            HotelDTO object = service.create(hotelDTO);
+            return ResponseEntity.ok(object);
+        }catch (HotelServiceException e){
+            return serviceExceptions(e);
+        }
+    }
     //PUT: localhost:8080/agency/hotels/edit/{id}
 
     // DELETE: localhost:8080/agency/hotels/delete/{id}
     //no se si puedo poner delete, ya que es un eliminado logico no de verdad,
     // por si acaso pongo patch respetando que solo altero un campo
     @PatchMapping("/hotels/delete/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+    public ResponseEntity<?> noAvailable(@PathVariable Long id) {
         try {
             service.delete(id);
             return ResponseEntity.ok("Habitación " + id + " eliminada correctamente.");

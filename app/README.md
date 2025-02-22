@@ -76,7 +76,7 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 - Al escoger como nombre de los parametros IsAvailable , sin saberlo, me ha dado muchos problemas, aunque ayer iba , hoy no. 
 Era un problema de conflictos con jacson que tiene esa palabra reservada por lo que he renombrado los parametros isAvailable por available.
 Y por si acaso tambien isBooked por booked
-- Tambien tuve problemas con ErrorDTO, no lo usaba correctamente , ya que este es el que devuelve el json y ha de estar en el controllador.
+- Tambien tuve problemas con ErrorDTO, no lo usaba correctamente , ya que este es el que devuelve el json y cre que ha de estar en el controllador.
 He cambiado los exception que tenian varios constructores y replanteado como devolver un errorDTO en controller para no repetir codigo.
 - Ahora mis exceciones personalizadas recogen el error y el controller devuelve datos si no hay excepcion y si hay excepcion devuelve un ErroDTO.
 
