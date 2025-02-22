@@ -29,7 +29,7 @@ public class Hotel {
 
     private boolean booked;
 
-    private boolean isAvailable;
+    private boolean available;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<HotelBooking> bookings = new ArrayList<>();

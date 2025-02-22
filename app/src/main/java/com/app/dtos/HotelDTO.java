@@ -38,5 +38,5 @@ public class HotelDTO {
 
     //si empieza por is necesita la etiqueta aunque sea el mismo nombre
     @JsonProperty("isBooked")
-    private boolean isBooked;
+    private boolean Booked;
 }

@@ -24,13 +24,14 @@ public class Flight {
     private String cityFrom;
     private String cityDestination;
     private String typeOfSeat;
-    private Double prize;
+    private Double price;
     private LocalDate dateFrom;
 
-    private boolean isBooked;
+    private boolean booked;
 
-    private boolean isAvailable;
+    private boolean available;
 
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<FlightBooking> bookings = new ArrayList<>();
+
 }

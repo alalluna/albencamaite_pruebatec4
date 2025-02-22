@@ -59,12 +59,26 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 
 ## 2️⃣ Explicación de la lógica de negocio
 
- ### METODOS LIST: listan objetos "habilitados"
- ### METODOS FINDONE: muestran un objeto "habilitados"
+ ### METODOS LIST: listan objetos "habilitados" (Se muestran los habilitados y disponibles para las reservas) 
+      Si la lista esta vacia lanza excepcion y el controlador devuelve el ErroDTO
+
+ ### METODOS FINDONE: muestran un objeto "habilitados" y disponible 
+      Si no lanza excepciones : si no existe en bbdd, si no esta habilitada o si ya esta reservada
+
+### METODOS DELETE: cambiara el boleano Available a false para que quede en la base de datos
+      Si no existe el objeto lanza excepción, si existe y ya está inhabilitado tambien
+      No estoy segura pero creo que si no se elimina de verdad no puedo poner @Deletemapping
  🎉
 
 ---
-###  titular tres 📄
+###  Correcciones necesarias📄
+
+- Al escoger como nombre de los parametros IsAvailable , sin saberlo, me ha dado muchos problemas, aunque ayer iba , hoy no. 
+Era un problema de conflictos con jacson que tiene esa palabra reservada por lo que he renombrado los parametros isAvailable por available.
+Y por si acaso tambien isBooked por booked
+- Tambien tuve problemas con ErrorDTO, no lo usaba correctamente , ya que este es el que devuelve el json y ha de estar en el controllador.
+He cambiado los exception que tenian varios constructores y replanteado como devolver un errorDTO en controller para no repetir codigo.
+- Ahora mis exceciones personalizadas recogen el error y el controller devuelve datos si no hay excepcion y si hay excepcion devuelve un ErroDTO.
 
 ### 5 subtitulos enumerados con icono herramientas 🛠️
 
@@ -177,17 +191,10 @@ DELETE: /agency/flights/delete/{id}
 ✅ GET: /agency/flights → Todos los vuelos
 
 
-⚠️ Para las bajas se puede optar por borrado físico (eliminación total del registro en la base de datos) o lógico (marcar mediante una bandera lógica el borrado o no de un registro pero que el mismo siga permaneciendo en la base de datos aunque esté oculto para la lógica)
-
-
-
 Validaciones necesarias (básicas)
 
 
 Para bajas y modificaciones debe existir el hotel, reserva, habitación o vuelo correspondiente. Caso contrario, se debe retornar el correspondiente status code y msje.
-
-
-✅ Para las consultas, en caso de no encontrar resultados se debe informar dicha situación mediante un mensaje.
 
 
 Para altas, validar que no exista anteriormente una reserva con idénticas características.
@@ -200,15 +207,10 @@ Cualquier validación extra necesaria o complementaria que se considere necesari
 
 Extra (sugerencias)
 A continuación se sugiere una serie de test unitarios a llevar a cabo; sin embargo, en caso de que se considere necesario implementar otros, esto es totalmente viable.
-Se solicita al menos la implementación de 1 TEST UNITARIO para manifestar la correcta comprensión de uso de ésta herramienta.
+Implementación de 1 TEST UNITARIO 
 ⚠️ Nota: Tener en cuenta que los datos de entrada pueden variar dependiendo del modelado que haya sido realizado por cada desarrollador. En caso de corresponder, realizar las modificaciones/adaptaciones correspondientes necesarias en los tests unitarios sugeridos.
 
-
-User Story
-Situaciones/Datos de entrada
-Comportamiento Esperado
-
-1
 Se envía solicitud de listado de todos los hoteles registrados.
-- Si hay hoteles registrados: Permite continuar con normalidad y muestra listado completo.    -Si no hay hoteles: Notifica la no existencia mediante una excepción.
+- Si hay hoteles registrados: Permite continuar con normalidad y muestra listado completo.    
+- Si no hay hoteles: Notifica la no existencia mediante una excepción.
 

@@ -21,8 +21,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/**").authenticated()
-                ).formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+                        .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
+                        .anyRequest().authenticated())
+                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .httpBasic(httpBasic -> httpBasic.realmName("app"))
                 .build();
     }

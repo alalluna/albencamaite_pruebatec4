@@ -6,6 +6,7 @@ import com.app.repositories.HotelRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -36,20 +37,21 @@ public class HotelService implements HotelServiceInterface {
         //validar si no hay datos, si no está habilitado o no esta disponible
 
         if (hotelOptional.isEmpty()) {
-            throw new HotelServiceException("Hotel " + id + " no encontrado", HttpStatus.NOT_FOUND.value());
+            throw new HotelServiceException("Habitación " + id + " no encontrada", HttpStatus.NOT_FOUND.value());
         }
 
         Hotel hotel = hotelOptional.get();
 
         if (!hotel.isAvailable()) {
-            throw new HotelServiceException("Hotel " + id + " no habilitado", HttpStatus.NOT_FOUND.value());
+            throw new HotelServiceException("Habitación " + id + " eliminada, selecciona otra", HttpStatus.NOT_FOUND.value());
         }
 
         if (hotel.isBooked()) {
-            throw new HotelServiceException("Esta habitación no está disponible", HttpStatus.NOT_FOUND.value());
+            throw new HotelServiceException("Habitación " + id +" no disponible actualmente", HttpStatus.NOT_FOUND.value());
         }
 
         return mapToDTO(hotel);
+
     }
 
     @Override
@@ -64,12 +66,20 @@ public class HotelService implements HotelServiceInterface {
 
     @Override
     public void delete(Long id) {
+        // si se encuentra si están inhabilitado y si se "elimina" correctamente
+        Hotel hotel = repository.findById(id)
+                .orElseThrow(() -> new HotelServiceException("Habitación " + id + " no encontrada", HttpStatus.NOT_FOUND.value()));
 
+        if (!hotel.isAvailable()) {
+            throw new HotelServiceException("Habitación " + id + " eliminada", HttpStatus.BAD_REQUEST.value());
+        }
+
+        hotel.setAvailable(false);
+        repository.save(hotel);
     }
 
     @Override
     public HotelDTO mapToDTO(Hotel hotel) {
-
         return new HotelDTO(
                 hotel.getCode(),
                 hotel.getHotelName(),

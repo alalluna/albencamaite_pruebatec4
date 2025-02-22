@@ -1,12 +1,14 @@
 package com.app.services;
 
 import com.app.dtos.ErrorDTO;
+import lombok.Getter;
 
-public class HotelServiceException extends RuntimeException {
+@Getter
+public class HotelServiceException extends RuntimeException{
     private final ErrorDTO error;
 
-    public HotelServiceException(String message,int code) {
+    public HotelServiceException(String message, int status) {
         super(message);
-        this.error = new ErrorDTO(message, code);
+        this.error = new ErrorDTO(message, status);
     }
 }
