@@ -7,6 +7,7 @@ import com.app.services.HotelServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -19,21 +20,33 @@ public class HotelController {
     //GET: localhost:8080/agency/hotels → Todos los hoteles
     @GetMapping({"/hotels/","/hotels"})
     public ResponseEntity<?> all(){
-        try{  List<HotelDTO>  listOfObjects = service.list();
+        try{
+            List<HotelDTO>  listOfObjects = service.list();;
             return ResponseEntity.ok(listOfObjects);
-        } catch (HotelServiceException e){
-            return serviceExceptions(e);
-        }
+
+        } catch (HotelServiceException e){ return serviceExceptions(e); }
+    }
+
+    //GET: localhost:8080/agency/rooms?dateFrom=dd/mm/aaaa&dateTo=dd/mm/aaaa&destination="nombre_destino"
+    @GetMapping({"/rooms/","/rooms"})
+    public ResponseEntity<?> filterList(@RequestParam String dateFrom, @RequestParam String dateTo, @RequestParam String destination){
+        try{
+            LocalDate from = LocalDate.parse(dateFrom);
+            LocalDate to = LocalDate.parse(dateTo);
+            List<HotelDTO>  listOfObjects = service.filterHotels(from,to,destination);
+            return ResponseEntity.ok(listOfObjects);
+
+        } catch (HotelServiceException e){ return serviceExceptions(e); }
     }
 
     //GET: localhost:8080/agency/hotels/{id} → Hotel en particular
     @GetMapping("/hotels/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){
-        try{ HotelDTO object = service.findOne(id);
-        return ResponseEntity.ok(object);
-        } catch (HotelServiceException e){
-            return serviceExceptions(e);
-        }
+        try{
+            HotelDTO object = service.findOne(id);
+            return ResponseEntity.ok(object);
+
+        } catch (HotelServiceException e){ return serviceExceptions(e); }
     }
 
     //POST: /agency/hotels/new
@@ -42,24 +55,20 @@ public class HotelController {
         try{
             HotelDTO object = service.create(hotelDTO);
             return ResponseEntity.ok(object);
-        }catch (HotelServiceException e){
-            return serviceExceptions(e);
-        }
+        }catch (HotelServiceException e){ return serviceExceptions(e); }
     }
+
     //PUT: localhost:8080/agency/hotels/edit/{id}
     @PutMapping("/hotels/edit/{id}")
     public ResponseEntity<?>update(@PathVariable Long id, @RequestBody HotelDTO hotelDTO){
         try{
             HotelDTO object = service.update(id, hotelDTO);
             return ResponseEntity.ok(object);
-        }catch (HotelServiceException e){
-            return serviceExceptions(e);
-        }
+
+        }catch (HotelServiceException e){ return serviceExceptions(e); }
     }
 
-    // DELETE: localhost:8080/agency/hotels/delete/{id}
-    //no se si puedo poner delete, ya que es un eliminado logico no de verdad,
-    // por si acaso pongo patch respetando que solo altero un campo
+    // DELETE: localhost:8080/agency/hotels/delete/{id} (creo que es patch porque no se elimina de verdad)
     @PatchMapping("/hotels/delete/{id}")
     public ResponseEntity<?> noAvailable(@PathVariable Long id) {
         try {
@@ -70,9 +79,7 @@ public class HotelController {
         }
     }
 
-    //por si hay un error
     private ResponseEntity<ErrorDTO> serviceExceptions(HotelServiceException e) {
         return ResponseEntity.status(e.getError().getStatus()).body(e.getError());
     }
-
 }

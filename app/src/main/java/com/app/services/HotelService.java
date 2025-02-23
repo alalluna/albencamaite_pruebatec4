@@ -21,9 +21,7 @@ public class HotelService implements HotelServiceInterface {
     @Override
     public List<HotelDTO> list() {
         List<Hotel> listOfElements = getTrueList();
-        //validar si no hay datos para que no salga un lista vacia
-        validateNonEmptyList(listOfElements);
-
+        HotelServiceValidations.validateNonEmptyList(listOfElements);
         return listOfElements.stream().map(this::mapToDTO).toList();
     }
 
@@ -31,26 +29,22 @@ public class HotelService implements HotelServiceInterface {
     public HotelDTO findOne(Long id) {
         Optional< Hotel> hotelOptional = repository.findById(id);
 
-        //validar si no hay datos, si no está habilitado o no esta disponible
         if (hotelOptional.isEmpty()) {
             throw new HotelServiceException("Habitación " + id + " no encontrada", HttpStatus.NOT_FOUND.value());
         }
 
         Hotel hotel = hotelOptional.get();
-        validateAvailability(hotel, id);
-        validateNonBooked(hotel, id);
-
+        HotelServiceValidations.validateAvailability(hotel, id);
+        HotelServiceValidations.validateNonBooked(hotel, id);
         return mapToDTO(hotel);
-
     }
 
     @Override
     public HotelDTO create(HotelDTO hotelDTO) {
-        validateDTO(hotelDTO);
-        validateDates(hotelDTO);
+        HotelServiceValidations.validateDTO(hotelDTO);
+        HotelServiceValidations.validateObjectDates(hotelDTO);
         Hotel hotel = mapToEntity(hotelDTO);
         validateNonDuplicateHotel(hotel);
-        hotel.setBooked(false);
         Hotel savedObject = repository.save(hotel);
         return mapToDTO(savedObject);
     }
@@ -60,72 +54,38 @@ public class HotelService implements HotelServiceInterface {
         Hotel hotel = repository.findById(id)
                 .orElseThrow(() -> new HotelServiceException("Habitación " + id +" no encontrada", HttpStatus.NOT_FOUND.value()));
 
-        validateAvailability(hotel, id);
-        //la siguiente linea se podría obviar teniendo en cuenta que alguien que haya hecho una reserva,
-        // podria querer modificarla, aunque tb se podria eliminar y crear una nueva(lo dejo porque es un requisito)
-        validateNonBooked(hotel, id);
+        HotelServiceValidations.validateAvailability(hotel, id);
+        HotelServiceValidations.validateNonBooked(hotel, id);
         updateHotelData(hotel, hotelDTO);
+        HotelServiceValidations.validateObjectDates(hotelDTO);
         Hotel updatedObject = repository.save(hotel);
         return mapToDTO(updatedObject);
     }
 
     @Override
     public void delete(Long id) {
-        // si se encuentra si están inhabilitado y si se "elimina" correctamente
         Hotel hotel = repository.findById(id)
                 .orElseThrow(() -> new HotelServiceException("Habitación " + id + " no encontrada", HttpStatus.NOT_FOUND.value()));
 
-        validateAvailability(hotel, id);
-        validateNonBooked(hotel, id);
+        HotelServiceValidations.validateAvailability(hotel, id);
+        HotelServiceValidations.validateNonBooked(hotel, id);
         hotel.setAvailable(false);
         repository.save(hotel);
     }
 
-    //validaciones
     @Override
-    public void validateDTO(HotelDTO hotelDTO) {
-        if (hotelDTO.getHotelName() == null || hotelDTO.getHotelName().isBlank()) {
-            throw new HotelServiceException("El nombre del hotel es obligatorio", HttpStatus.BAD_REQUEST.value());
-        }
-        if (hotelDTO.getCity() == null || hotelDTO.getCity().isBlank()) {
-            throw new HotelServiceException("La ciudad es obligatoria", HttpStatus.BAD_REQUEST.value());
-        }
-        if (hotelDTO.getPrice() == null || hotelDTO.getPrice() < 0) {
-            throw new HotelServiceException("El precio debe ser un número positivo", HttpStatus.BAD_REQUEST.value());
-        }
+    public List<HotelDTO> filterHotels(LocalDate dateFrom, LocalDate dateTo, String destination) {
+        HotelServiceValidations.validateDates(dateFrom, dateTo);
+        List<Hotel> rooms = getTrueList().stream()
+                .filter(hotel -> hotel.getCity().equalsIgnoreCase(destination))
+                .filter(hotel -> hotel.getDateFrom().isBefore(dateTo) && hotel.getDateTo().isAfter(dateFrom))
+                .toList();
 
+        HotelServiceValidations.validateNonEmptyList(rooms);
+        return rooms.stream().map(this::mapToDTO).toList();
     }
 
-    public void validateDates(HotelDTO hotelDTO){
-        if (hotelDTO.getDateFrom().isAfter(hotelDTO.getDateTo())) {
-            throw new HotelServiceException("La fecha de inicio debe ser antes de la fecha de fin", HttpStatus.BAD_REQUEST.value());
-        }
-        if (hotelDTO.getDateFrom().isBefore(LocalDate.now()) || hotelDTO.getDateTo().isBefore(LocalDate.now())) {
-            throw new HotelServiceException("La fechas deben ser futuras", HttpStatus.BAD_REQUEST.value());
-        }
-    }
-
-    @Override
-    public void validateNonEmptyList(List<Hotel> list) {
-        if (list.isEmpty()) {
-            throw new HotelServiceException("No hay habitaciones disponibles", HttpStatus.NOT_FOUND.value());
-        }
-    }
-
-    @Override
-    public void validateNonBooked(Hotel hotel,Long id){
-        if (hotel.isBooked()) {
-            throw new HotelServiceException("Habitación " + id +" reservada, si desea eliminarla debera cancelar/modificar la reserva", HttpStatus.NOT_FOUND.value());
-        }
-    }
-
-    @Override
-    public void validateAvailability(Hotel hotel, Long id) {
-        if (!hotel.isAvailable()) {
-            throw new HotelServiceException("Habitación " + id + " eliminada si desea recuperarla contacte con supervisión", HttpStatus.NOT_FOUND.value());
-        }
-    }
-
+    //auxiliares
     @Override
     public void validateNonDuplicateHotel(Hotel hotel) {
         boolean exist = repository.findAll().stream()
@@ -135,7 +95,6 @@ public class HotelService implements HotelServiceInterface {
         }
     }
 
-    //auxiliares
     @Override
     public boolean compareObjects(Hotel object1, Hotel object2) {
         return object1.getHotelName().equalsIgnoreCase(object2.getHotelName()) &&
@@ -190,8 +149,8 @@ public class HotelService implements HotelServiceInterface {
                 hotelDTO.getPrice(),
                 hotelDTO.getDateFrom(),
                 hotelDTO.getDateTo(),
-                hotelDTO.isBooked(),//como no se aun como gestionar las reservas lo dejo asi pero tb podría ser false
-                true, // pongo el boleano Available por defecto
+               false,
+                true,
                 new ArrayList<>()
         );
     }
