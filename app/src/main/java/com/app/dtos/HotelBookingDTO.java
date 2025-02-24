@@ -1,6 +1,5 @@
 package com.app.dtos;
 
-import com.app.entities.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -16,13 +15,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HotelBookingDTO {
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd/MM/yyyy")
     @JsonProperty("dateFrom")
-    private LocalDate from;
+    private LocalDate startDate;
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd/MM/yyyy")
     @JsonProperty("dateTo")
-    private LocalDate to;
+    private LocalDate endDate;
 
     @JsonProperty("nights")
     private Integer numberOfNights;
@@ -40,6 +39,5 @@ public class HotelBookingDTO {
     private String typeRoom;
 
     @JsonProperty("hosts")
-    private List<User> guests = new ArrayList<>();
-
+    private List<UserDTO> guests = new ArrayList<>();
 }

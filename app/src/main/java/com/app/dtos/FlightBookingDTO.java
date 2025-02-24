@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FlightBookingDTO {
     @JsonProperty("date")
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd/MM/yyyy")
     private LocalDate dateFrom;
 
     @JsonProperty("Origin")

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -21,8 +22,8 @@ public class HotelBooking {
     @ManyToOne
     private Hotel hotel;
 
-    @ManyToMany
-    private List<User> hosts;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<User> hosts = new ArrayList<>();
 
     private LocalDate checkInDate;
     private LocalDate checkOutDate;

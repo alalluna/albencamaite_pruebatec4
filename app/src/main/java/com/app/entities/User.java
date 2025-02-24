@@ -1,5 +1,6 @@
 package com.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +20,13 @@ public class User {
     private String completeName;
 
     private String contact;
+
+    //cambio en la relacion
+    @ManyToOne
+    @JsonIgnore
+    private HotelBooking booking;
+
+//    @ManyToOne
+//    @JsonIgnore
+//    private FlightBooking reserve;
 }

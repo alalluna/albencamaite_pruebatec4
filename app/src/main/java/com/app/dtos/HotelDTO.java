@@ -29,14 +29,14 @@ public class HotelDTO {
     private Double price;
 
     @JsonProperty("disponibilityDateFrom")
-    @JsonFormat(pattern = "dd/MM/yyyy")
-    private LocalDate dateFrom;//“dd/mm/yyyy”
+    //cambio en los formatos, porque da problemas
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd/MM/yyyy")
+    private LocalDate dateFrom;
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd/MM/yyyy")
     @JsonProperty("disponibilityDateTo")
-    private LocalDate dateTo;//“dd/mm/yyyy”
+    private LocalDate dateTo;
 
-    //si empieza por is necesita la etiqueta aunque sea el mismo nombre
     @JsonProperty("isBooked")
     private boolean Booked;
 }

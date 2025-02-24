@@ -1,7 +1,11 @@
 package com.app.services;
 
+import com.app.dtos.HotelBookingDTO;
 import com.app.dtos.HotelDTO;
+import com.app.dtos.UserDTO;
 import com.app.entities.Hotel;
+import com.app.entities.HotelBooking;
+import com.app.entities.User;
 import com.app.repositories.HotelRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,18 +78,80 @@ public class HotelService implements HotelServiceInterface {
     }
 
     @Override
-    public List<HotelDTO> filterHotels(LocalDate dateFrom, LocalDate dateTo, String destination) {
-        HotelServiceValidations.validateDates(dateFrom, dateTo);
+    public List<HotelDTO> filterHotels(String dateFrom, String dateTo, String destination) {
+        LocalDate startDate = DateUtilService.parseDate(dateFrom);
+        LocalDate endDate = DateUtilService.parseDate(dateTo);
         List<Hotel> rooms = getTrueList().stream()
                 .filter(hotel -> hotel.getCity().equalsIgnoreCase(destination))
-                .filter(hotel -> hotel.getDateFrom().isBefore(dateTo) && hotel.getDateTo().isAfter(dateFrom))
+                .filter(hotel -> hotel.getDateFrom().isBefore(endDate) && hotel.getDateTo().isAfter(startDate))
                 .toList();
 
         HotelServiceValidations.validateNonEmptyList(rooms);
         return rooms.stream().map(this::mapToDTO).toList();
     }
 
+    @Override
+    public HotelBookingDTO createBooking(HotelBookingDTO hotelBookingDTO) {
+        Hotel hotel = findAvailableHotel(hotelBookingDTO);
+        hotel.setBooked(true);
+
+        HotelBooking newBooking = createNewBooking(hotelBookingDTO, hotel);
+        List<User> guests = createGuestList(hotelBookingDTO, newBooking);
+
+        newBooking.setHosts(guests);
+        hotel.getBookings().add(newBooking);
+        repository.save(hotel);
+
+        return buildBookingDTO(newBooking, hotel, guests);
+    }
+
     //auxiliares
+    private Hotel findAvailableHotel(HotelBookingDTO hotelBookingDTO) {
+        return getTrueList().stream()
+                .filter(hotel -> hotel.getCity().equalsIgnoreCase(hotelBookingDTO.getCity()))
+                .filter(hotel -> hotel.getTypeRoom().equalsIgnoreCase(hotelBookingDTO.getTypeRoom()))
+                .filter(hotel -> hotel.getDateFrom().isBefore(hotelBookingDTO.getEndDate())
+                        && hotel.getDateTo().isAfter(hotelBookingDTO.getStartDate()))
+                .findFirst()
+                .orElseThrow(() -> new HotelServiceException( "No hay habitaciones disponibles con los criterios especificados", HttpStatus.NOT_FOUND.value()
+                ));
+    }
+
+    private HotelBooking createNewBooking(HotelBookingDTO hotelBookingDTO, Hotel hotel) {
+        HotelBooking newBooking = new HotelBooking();
+        newBooking.setHotel(hotel);
+        newBooking.setCheckInDate(hotelBookingDTO.getStartDate());
+        newBooking.setCheckOutDate(hotelBookingDTO.getEndDate());
+        newBooking.setNumberOfNights(DateUtilService.calculateDaysBetween(
+                hotelBookingDTO.getStartDate(),
+                hotelBookingDTO.getEndDate()
+        ));
+        return newBooking;
+    }
+
+    private List<User> createGuestList(HotelBookingDTO hotelBookingDTO, HotelBooking booking) {
+        return hotelBookingDTO.getGuests().stream()
+                .map(dto -> new User(null, dto.getCompleteName(), dto.getContact(), booking))
+                .toList();
+    }
+
+    private HotelBookingDTO buildBookingDTO(HotelBooking booking, Hotel hotel, List<User> guests) {
+        List<UserDTO> guestDTOs = guests.stream()
+                .map(user -> new UserDTO(user.getCompleteName(), user.getContact()))
+                .toList();
+
+        return new HotelBookingDTO(
+                booking.getCheckInDate(),
+                booking.getCheckOutDate(),
+                booking.getNumberOfNights(),
+                hotel.getCity(),
+                hotel.getCode(),
+                guests.size(),
+                hotel.getTypeRoom(),
+                guestDTOs
+        );
+    }
+
     @Override
     public void validateNonDuplicateHotel(Hotel hotel) {
         boolean exist = repository.findAll().stream()
@@ -115,6 +181,7 @@ public class HotelService implements HotelServiceInterface {
 
     @Override
     public void updateHotelData(Hotel hotel, HotelDTO hotelDTO) {
+        hotel.setCode(hotelDTO.getCode());
         hotel.setHotelName(hotelDTO.getHotelName());
         hotel.setCity(hotelDTO.getCity());
         hotel.setTypeRoom(hotelDTO.getTypeRoom());
@@ -123,6 +190,7 @@ public class HotelService implements HotelServiceInterface {
         hotel.setDateTo(hotelDTO.getDateTo());
         hotel.setBooked(hotelDTO.isBooked());
     }
+
     //conversores
     @Override
     public HotelDTO mapToDTO(Hotel hotel) {

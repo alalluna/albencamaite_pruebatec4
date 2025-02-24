@@ -32,7 +32,7 @@ public class FlightDTO {
     @JsonProperty("flightPrice")
     private Double price;
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd/MM/yyyy")
     @JsonProperty("date")
     private LocalDate dateFrom; //“dd/mm/yyyy”
 }

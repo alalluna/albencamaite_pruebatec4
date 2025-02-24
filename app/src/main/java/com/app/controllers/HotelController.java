@@ -1,13 +1,13 @@
 package com.app.controllers;
 
 import com.app.dtos.ErrorDTO;
+import com.app.dtos.HotelBookingDTO;
 import com.app.dtos.HotelDTO;
 import com.app.services.HotelServiceException;
 import com.app.services.HotelServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,9 +31,7 @@ public class HotelController {
     @GetMapping({"/rooms/","/rooms"})
     public ResponseEntity<?> filterList(@RequestParam String dateFrom, @RequestParam String dateTo, @RequestParam String destination){
         try{
-            LocalDate from = LocalDate.parse(dateFrom);
-            LocalDate to = LocalDate.parse(dateTo);
-            List<HotelDTO>  listOfObjects = service.filterHotels(from,to,destination);
+            List<HotelDTO>  listOfObjects = service.filterHotels(dateFrom,dateTo,destination);
             return ResponseEntity.ok(listOfObjects);
 
         } catch (HotelServiceException e){ return serviceExceptions(e); }
@@ -78,6 +76,15 @@ public class HotelController {
             return serviceExceptions(e);
         }
     }
+
+    @PostMapping("/room-booking/new")
+    public ResponseEntity<?> create(@RequestBody HotelBookingDTO hotelBookingDTO){
+        try{
+            HotelBookingDTO object = service.createBooking(hotelBookingDTO);
+            return ResponseEntity.ok(object);
+        }catch (HotelServiceException e){ return serviceExceptions(e); }
+    }
+
 
     private ResponseEntity<ErrorDTO> serviceExceptions(HotelServiceException e) {
         return ResponseEntity.status(e.getError().getStatus()).body(e.getError());

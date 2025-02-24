@@ -94,7 +94,14 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 
 - Despues de crear validadiones y metodos auxiliares para reducir la logitud de los metodos, los he probado y funciona.
   Aunque podría hacer mas, veo que hay suficientes para los crud, mas tarde tendre que añadir alguno mas para las reservas.
-  paso crear update donde podré reciclar algunos de estos metodos auxiliares y validaciones.
+  paso a crear update donde podré reciclar algunos de estos metodos auxiliares y validaciones.
+
+- Me esta dando problemas los campos de tipo fecha, y no quiero transformarlos en el controlador, ni andar formateando tod el rato.
+  Por ello he creado una clase que formatea las fechas para utilizarla haya donde me haga falta y he dejado la etiqueta JsonFormat de los dtos.
+
+- He tenido prblema en las relacions, yo pensaba que como habia muchos usuarios en cada reserva y un usuario podia tener muchas reservas, 
+- Panteado así penssé que la relacion debia ser ManytoMany pero no consigo resolverlo, tampoco profundizamos tanto con ManyToMany, 
+- Por ello que he cambiado la relacion a one to many ( una reserva puede contener a muchos usuarios).
 
 
 ---
