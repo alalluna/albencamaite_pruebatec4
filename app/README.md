@@ -79,7 +79,7 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 
 ---
 
-###  CORRECCIONES NECESARIAS📄
+###  CORRECCIONES NECESARIAS Y SUPUESTOS📄
 
 - Al escoger como nombre de los parametros IsAvailable , sin saberlo, me ha dado muchos problemas (aunque ayer iba, hoy no). 
   Era un problema de conflictos con jacson que tiene esa palabra reservada por lo que he renombrado los parametros isAvailable por available.
@@ -99,9 +99,14 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 - Me esta dando problemas los campos de tipo fecha, y no quiero transformarlos en el controlador, ni andar formateando tod el rato.
   Por ello he creado una clase que formatea las fechas para utilizarla haya donde me haga falta y he dejado la etiqueta JsonFormat de los dtos.
 
-- He tenido prblema en las relacions, yo pensaba que como habia muchos usuarios en cada reserva y un usuario podia tener muchas reservas, 
-- Panteado así penssé que la relacion debia ser ManytoMany pero no consigo resolverlo, tampoco profundizamos tanto con ManyToMany, 
-- Por ello que he cambiado la relacion a one to many ( una reserva puede contener a muchos usuarios).
+- He tenido problema en las relaciones, yo pensaba que como habia muchos usuarios en cada reserva y un usuario podia tener muchas reservas, 
+  Panteado así penssé que la relacion debia ser ManytoMany pero no consigo resolverlo, tampoco profundizamos tanto con ManyToMany, 
+  Por ello que he cambiado la relacion a one to many ( una reserva puede contener a muchos usuarios).
+
+- En las reservas de hotel mis habitaciones de hotel tienen un rango de fechas de disponibilidad, mi codigo permite realizar una reserva 
+  siempre y cuando las fechas comprendidas en el chekin y chekout, sea inferior o igual a la disponibilidad de la habitacion. Si la seleccion 
+  de fechas es exactamente igual, la disponibilidad cubierta es total, pero si el chekin y chekout de la reserva es inferior a la fecha 
+  de inicio y fin de la disponibilidad de la habitacion esta disponibilidad cambia a reservado y quedaría algun dia suelto sin huesped.
 
 
 ---
@@ -133,35 +138,8 @@ aqui va el codigo
 
 Historias de usuario de Hoteles y habitaciones
 
-User Story Nº 2: Obtener un listado de todos los habitaciones disponibles en un determinado rango de fechas y según el destino seleccionado.
-
-Método GET
-
-
-Path: /agency/rooms?dateFrom=dd/mm/aaaa&dateTo=dd/mm/aaaa&destination="nombre_destino"
-
-User Story Nº 3: Realizar una reserva de un habitación, indicando cantidad de personas, fecha de entrada, fecha de salida y tipo de habitación. Obtener como respuesta el monto total de la reserva realizada
-
-Método POST
-
-Path: /agency/room-booking/new
-
-
-⚠️ Se pueden realizar cambios en el JSON en caso de ser necesario, el mismo es solo de referencia.
-
-
-⚠️ Para ninguna de estas historias de usuario es necesario estar autenticado para acceder a los endpoints ya que son requerimientos que utilizarán los propios clientes de la empresa.
-
 
 Historias de usuario de Vuelos
-✅ User Story Nº 4: Obtener un listado de todos los vuelos registrados
-
-User Story Nº 5: Obtener un listado de todos los vuelos disponibles para una fecha de ida y su correspondiente fecha de vuelta, según el destino y el origen seleccionados (mostrar tanto los de ida como los de vuelta).
-
-Método GET
-
-
-Path: /agency/flights?dateFrom=dd/mm/aaaa&dateTo=dd/mm/aaaa&origin="ciudad1"&destination="ciudad2"
 
 User Story Nº 6: Realizar una reserva de un vuelo, indicando cantidad de personas, origen, destino y fecha de ida. Obtener como respuesta el monto total de la reserva realizada.
 
@@ -169,37 +147,9 @@ Método POST
 Path: /agency/flight-booking/new
 
 
-⚠️ Recordar que solo se especifica fecha de ida, en caso de que sea ida y vuelta deben ser dos vuelos separados y se invierte el orden de origen y destino. Esto lo hace el usuario que compra. No es necesario llevarlo a cabo mediante código.
-
-⚠️ Se pueden realizar cambios en el JSON en caso de ser necesario, el mismo es solo de referencia.
-
-
-⚠️ Para ninguna de estas historias de usuario es necesario estar autenticado para acceder a los endpoints ya que son requerimientos que utilizarán los propios clientes de la empresa.
-
-
-Historias de Usuario generales
-User Story Nº 7: Permitir la realización de operaciones modificación 
-
-Paths Hoteles:
-PUT: /agency/hotels/edit/{id}
-
-Paths Vuelos:
-PUT: /agency/flights/edit/{id}
-
-Validaciones necesarias (básicas)
-
-
-En modificaciones debe existir el hotel, reserva, habitación o vuelo correspondiente. 
-Caso contrario, se debe retornar el correspondiente status code y msje.
-
-Cualquier validación extra necesaria o complementaria que se considere necesaria puede ser implementada sin problema alguno.
-
 Extra (sugerencias)
 A continuación se sugiere una serie de test unitarios a llevar a cabo; sin embargo, en caso de que se considere necesario implementar otros, esto es totalmente viable.
 Implementación de 1 TEST UNITARIO 
 ⚠️ Nota: Tener en cuenta que los datos de entrada pueden variar dependiendo del modelado que haya sido realizado por cada desarrollador. En caso de corresponder, realizar las modificaciones/adaptaciones correspondientes necesarias en los tests unitarios sugeridos.
 
-Se envía solicitud de listado de todos los hoteles registrados.
-- Si hay hoteles registrados: Permite continuar con normalidad y muestra listado completo.    
-- Si no hay hoteles: Notifica la no existencia mediante una excepción.
 

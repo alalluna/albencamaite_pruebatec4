@@ -2,7 +2,6 @@ package com.app.services;
 
 import com.app.dtos.ErrorDTO;
 import lombok.Getter;
-import org.springframework.http.ProblemDetail;
 
 @Getter
 public class FlightServiceException extends RuntimeException{

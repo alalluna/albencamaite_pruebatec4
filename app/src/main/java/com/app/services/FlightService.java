@@ -1,5 +1,6 @@
 package com.app.services;
 
+import com.app.dtos.FlightBookingDTO;
 import com.app.dtos.FlightDTO;
 import com.app.entities.Flight;
 import com.app.repositories.FlightRepositoryInterface;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +55,12 @@ public class FlightService implements FlightServiceInterface{
 
     @Override
     public FlightDTO create(FlightDTO flightDTO) {
-        return null;
+        FlightServiceValidation.validateDTO(flightDTO);
+        FlightServiceValidation.validateObjectDate(flightDTO);
+        Flight flight = mapToEntity(flightDTO);
+        validateNonDuplicateFlight(flight);
+        Flight savedObject = repository.save(flight);
+        return mapToDTO(savedObject);
     }
 
     @Override
@@ -75,6 +82,36 @@ public class FlightService implements FlightServiceInterface{
     }
 
     @Override
+    public List<FlightDTO> filterFlights(String dateFrom, String dateTo, String origin, String destination) {
+        return List.of();
+    }
+
+    @Override
+    public FlightBookingDTO createBooking(FlightBookingDTO flightBookingDTO) {
+        return null;
+    }
+
+    @Override
+    public void validateNonDuplicateFlight(Flight flight) {
+
+    }
+
+    @Override
+    public List<Flight> getTrueList() {
+        return List.of();
+    }
+
+    @Override
+    public boolean compareObjects(Flight objectOne, Flight objectTwo) {
+        return false;
+    }
+
+    @Override
+    public void updateHotelData(Flight flight, FlightDTO flightDTO) {
+
+    }
+
+    @Override
     public FlightDTO mapToDTO(Flight flight) {
         return new FlightDTO(
                 flight.getCode(),
@@ -84,6 +121,24 @@ public class FlightService implements FlightServiceInterface{
                 flight.getTypeOfSeat(),
                 flight.getPrice(),
                 flight.getDateFrom()
+        );
+    }
+
+    @Override
+    public Flight mapToEntity(FlightDTO flightDTO) {
+        return new Flight(
+                null,
+                flightDTO.getCode(),
+                flightDTO.getFlightName(),
+                flightDTO.getCityFrom(),
+                flightDTO.getCityDestination(),
+                flightDTO.getTypeOfSeat(),
+                flightDTO.getPrice(),
+                flightDTO.getDateFrom(),
+                false,
+                true,
+                new ArrayList<>()
+
         );
     }
 }

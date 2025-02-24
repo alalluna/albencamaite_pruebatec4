@@ -162,13 +162,13 @@ public class HotelService implements HotelServiceInterface {
     }
 
     @Override
-    public boolean compareObjects(Hotel object1, Hotel object2) {
-        return object1.getHotelName().equalsIgnoreCase(object2.getHotelName()) &&
-                object1.getCity().equalsIgnoreCase(object2.getCity()) &&
-                object1.getTypeRoom().equalsIgnoreCase(object2.getTypeRoom()) &&
-                object1.getPrice().equals(object2.getPrice()) &&
-                object1.getDateFrom().equals(object2.getDateFrom()) &&
-                object1.getDateTo().equals(object2.getDateTo());
+    public boolean compareObjects(Hotel objectOne, Hotel objectTwo) {
+        return objectOne.getHotelName().equalsIgnoreCase(objectTwo.getHotelName()) &&
+                objectOne.getCity().equalsIgnoreCase(objectTwo.getCity()) &&
+                objectOne.getTypeRoom().equalsIgnoreCase(objectTwo.getTypeRoom()) &&
+                objectOne.getPrice().equals(objectTwo.getPrice()) &&
+                objectOne.getDateFrom().equals(objectTwo.getDateFrom()) &&
+                objectOne.getDateTo().equals(objectTwo.getDateTo());
     }
 
     @Override

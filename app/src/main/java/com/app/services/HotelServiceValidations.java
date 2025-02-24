@@ -42,7 +42,7 @@ public class HotelServiceValidations {
 
     public static void validateNonBooked(Hotel hotel, Long id){
         if (hotel.isBooked()) {
-            throw new HotelServiceException("Habitación " + id +" reservada, si desea eliminarla debera cancelar/modificar la reserva", HttpStatus.NOT_FOUND.value());
+            throw new HotelServiceException("Habitación " + id +" reservada, si desea eliminar/modificar contacte con supervisión", HttpStatus.NOT_FOUND.value());
         }
     }
 

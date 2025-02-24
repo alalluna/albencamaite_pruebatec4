@@ -19,7 +19,7 @@ public interface HotelServiceInterface {
     //auxiliares
     void validateNonDuplicateHotel(Hotel hotel);
     List<Hotel> getTrueList();
-    boolean compareObjects(Hotel object1, Hotel object2);
+    boolean compareObjects(Hotel objectOne, Hotel objectTwo);
     void updateHotelData(Hotel hotel, HotelDTO hotelDTO);
 
     //conversores
