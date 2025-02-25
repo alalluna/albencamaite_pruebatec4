@@ -45,6 +45,7 @@ public class FlightService implements FlightServiceInterface{
         FlightServiceValidations.validateDTO(flightDTO);
         FlightServiceValidations.validateObjectDate(flightDTO);
         Flight flight = mapToEntity(flightDTO);
+        flight.setCode(CodeGeneratorService.generateFlightCode(flight.getCityFrom(), flight.getCityDestination(), flight.getTypeOfSeat()));
         validateNonDuplicateFlight(flight);
         Flight savedObject = repository.save(flight);
         return mapToDTO(savedObject);
@@ -58,6 +59,8 @@ public class FlightService implements FlightServiceInterface{
         FlightServiceValidations.validateAvailability(flight, id);
         FlightServiceValidations.validateNonBooked(flight, id);
         updateFlightData(flight, flightDTO);
+
+        flight.setCode(CodeGeneratorService.generateFlightCode(flight.getCityFrom(), flight.getCityDestination(), flight.getTypeOfSeat()));
         FlightServiceValidations.validateObjectDate(flightDTO);
         Flight updatedObject = repository.save(flight);
         return mapToDTO(updatedObject);
@@ -102,16 +105,16 @@ public class FlightService implements FlightServiceInterface{
         flight.setBooked(true);
 
         FlightBooking newBooking = createNewBooking(flightBookingDTO, flight);
-        List<User> passengers = createGuestList(flightBookingDTO, newBooking);
+        List<User> passengers = createUserList(flightBookingDTO, newBooking);
 
         newBooking.setPassengers(passengers);
         flight.getBookings().add(newBooking);
         repository.save(flight);
 
-        return buildReserveDTO(newBooking, flight, passengers);
+        return buildBookingDTO(newBooking, flight, passengers);
     }
-
-    private Flight findAvailableFlight(FlightBookingDTO flightBookingDTO) {
+    @Override
+    public Flight findAvailableFlight(FlightBookingDTO flightBookingDTO) {
         return getTrueList().stream()
                 .filter(flight -> flight.getCityFrom().equalsIgnoreCase(flightBookingDTO.getCityFrom()))
                 .filter ( flight ->flight.getCityDestination().equalsIgnoreCase(flightBookingDTO.getCityDestination()))
@@ -120,22 +123,22 @@ public class FlightService implements FlightServiceInterface{
                 .orElseThrow(() -> new FlightServiceException( "No hay vuelos disponibles con los criterios especificados", HttpStatus.NOT_FOUND.value()
                 ));
     }
-
-    private FlightBooking createNewBooking(FlightBookingDTO flightBookingDTO, Flight flight) {
+    @Override
+    public FlightBooking createNewBooking(FlightBookingDTO flightBookingDTO, Flight flight) {
         FlightBooking newBooking = new FlightBooking();
         newBooking.setFlight(flight);
         newBooking.setFlightDate(flightBookingDTO.getDateFrom());
         newBooking.setSeatType(flightBookingDTO.getTypeOfSeat());
         return newBooking;
     }
-
-    private List<User> createGuestList(FlightBookingDTO flightBookingDTO, FlightBooking reserve) {
+    @Override
+    public List<User> createUserList(FlightBookingDTO flightBookingDTO, FlightBooking reserve) {
         return flightBookingDTO.getClients().stream()
                 .map(dto -> new User(null, dto.getCompleteName(), dto.getContact(), null, reserve))
                 .toList();
     }
-
-    private FlightBookingDTO buildReserveDTO(FlightBooking reserve, Flight flight, List<User> clients) {
+    @Override
+    public FlightBookingDTO buildBookingDTO(FlightBooking reserve, Flight flight, List<User> clients) {
         List<UserDTO> clientsDTOs = clients.stream()
                 .map(user -> new UserDTO(user.getCompleteName(), user.getContact()))
                 .toList();

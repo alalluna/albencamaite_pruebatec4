@@ -2,6 +2,7 @@ package com.app.services;
 
 import com.app.dtos.HotelBookingDTO;
 import com.app.dtos.HotelDTO;
+import com.app.dtos.HotelSummaryDTO;
 import com.app.dtos.UserDTO;
 import com.app.entities.Hotel;
 import com.app.entities.HotelBooking;
@@ -15,12 +16,31 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HotelService implements HotelServiceInterface {
 
     @Autowired
     HotelRepositoryInterface repository;
+
+    @Override
+    public List<HotelSummaryDTO> listHotelsSummary() {
+        return repository.findAll().stream()
+                .collect(Collectors.groupingBy(Hotel::getHotelName))
+                .entrySet().stream()
+                .map(entry -> {
+                    String hotelName = entry.getKey();
+                    List<Hotel> hotels = entry.getValue();
+                    String city = hotels.get(0).getCity(); // Suponiendo que todas las habitaciones del hotel tienen la misma ciudad
+
+                    List<String> roomCodes = hotels.stream().map(Hotel::getCode).distinct().toList();
+                    List<String> roomTypes = hotels.stream().map(Hotel::getTypeRoom).distinct().toList();
+
+                    return new HotelSummaryDTO(hotelName, city, roomCodes, roomTypes);
+                })
+                .toList();
+    }
 
     @Override
     public List<HotelDTO> list() {
@@ -48,6 +68,8 @@ public class HotelService implements HotelServiceInterface {
         HotelServiceValidations.validateDTO(hotelDTO);
         HotelServiceValidations.validateObjectDates(hotelDTO);
         Hotel hotel = mapToEntity(hotelDTO);
+
+        hotel.setCode(CodeGeneratorService.generateHotelCode(hotel.getHotelName(), hotel.getCity(), hotel.getTypeRoom()));
         validateNonDuplicateHotel(hotel);
         Hotel savedObject = repository.save(hotel);
         return mapToDTO(savedObject);
@@ -61,6 +83,8 @@ public class HotelService implements HotelServiceInterface {
         HotelServiceValidations.validateAvailability(hotel, id);
         HotelServiceValidations.validateNonBooked(hotel, id);
         updateHotelData(hotel, hotelDTO);
+
+        hotel.setCode(CodeGeneratorService.generateHotelCode(hotel.getHotelName(), hotel.getCity(), hotel.getTypeRoom()));
         HotelServiceValidations.validateObjectDates(hotelDTO);
         Hotel updatedObject = repository.save(hotel);
         return mapToDTO(updatedObject);
@@ -96,17 +120,18 @@ public class HotelService implements HotelServiceInterface {
         hotel.setBooked(true);
 
         HotelBooking newBooking = createNewBooking(hotelBookingDTO, hotel);
-        List<User> guests = createGuestList(hotelBookingDTO, newBooking);
+        List<User> hosts = createUserList(hotelBookingDTO, newBooking);
 
-        newBooking.setHosts(guests);
+        newBooking.setHosts(hosts);
         hotel.getBookings().add(newBooking);
         repository.save(hotel);
 
-        return buildBookingDTO(newBooking, hotel, guests);
+        return buildBookingDTO(newBooking, hotel,hosts);
     }
 
     //auxiliares
-    private Hotel findAvailableHotel(HotelBookingDTO hotelBookingDTO) {
+    @Override
+    public Hotel findAvailableHotel(HotelBookingDTO hotelBookingDTO) {
         return getTrueList().stream()
                 .filter(hotel -> hotel.getCity().equalsIgnoreCase(hotelBookingDTO.getCity()))
                 .filter(hotel -> hotel.getTypeRoom().equalsIgnoreCase(hotelBookingDTO.getTypeRoom()))
@@ -117,7 +142,8 @@ public class HotelService implements HotelServiceInterface {
                 ));
     }
 
-    private HotelBooking createNewBooking(HotelBookingDTO hotelBookingDTO, Hotel hotel) {
+    @Override
+    public HotelBooking createNewBooking(HotelBookingDTO hotelBookingDTO, Hotel hotel) {
         HotelBooking newBooking = new HotelBooking();
         newBooking.setHotel(hotel);
         newBooking.setCheckInDate(hotelBookingDTO.getStartDate());
@@ -129,14 +155,16 @@ public class HotelService implements HotelServiceInterface {
         return newBooking;
     }
 
-    private List<User> createGuestList(HotelBookingDTO hotelBookingDTO, HotelBooking booking) {
+    @Override
+    public List<User> createUserList(HotelBookingDTO hotelBookingDTO, HotelBooking booking) {
         return hotelBookingDTO.getGuests().stream()
                 .map(dto -> new User(null, dto.getCompleteName(), dto.getContact(), booking, null))
                 .toList();
     }
 
-    private HotelBookingDTO buildBookingDTO(HotelBooking booking, Hotel hotel, List<User> guests) {
-        List<UserDTO> guestDTOs = guests.stream()
+    @Override
+    public HotelBookingDTO buildBookingDTO(HotelBooking booking, Hotel hotel, List<User> hosts) {
+        List<UserDTO> hostsDTOs = hosts.stream()
                 .map(user -> new UserDTO(user.getCompleteName(), user.getContact()))
                 .toList();
 
@@ -146,9 +174,9 @@ public class HotelService implements HotelServiceInterface {
                 booking.getNumberOfNights(),
                 hotel.getCity(),
                 hotel.getCode(),
-                guests.size(),
+                hosts.size(),
                 hotel.getTypeRoom(),
-                guestDTOs
+                hostsDTOs
         );
     }
 

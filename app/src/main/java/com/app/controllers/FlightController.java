@@ -17,8 +17,7 @@ public class FlightController {
     @Autowired
     FlightServiceInterface service;
 
-    //GET: /agency/flights → Todos los vuelos
-    //    /agency/flights?dateFrom=dd/mm/aaaa&dateTo=dd/mm/aaaa&origin="ciudad1"&destination="ciudad2"
+    //en esta se pueden buscar todos, por vuelo de ida o ida y vuelta
     @GetMapping({"/flights/", "/flights"})
     public ResponseEntity<?> showFlights (@RequestParam(required = false) String dateFrom,
                                  @RequestParam(required = false) String dateTo,
@@ -35,7 +34,6 @@ public class FlightController {
         } catch (FlightServiceException e) { return serviceExceptions(e); }
     }
 
-    //GET: /agency/flights/{id} → Vuelo en particular
     @GetMapping("/flights/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){
         try{
@@ -45,7 +43,6 @@ public class FlightController {
         } catch (FlightServiceException e) { return serviceExceptions(e); }
     }
 
-    //POST: /agency/flights/new
     @PostMapping("/flights/new")
     public ResponseEntity<?> create(@RequestBody FlightDTO flightDTO){
         try{
@@ -55,7 +52,6 @@ public class FlightController {
         }catch (FlightServiceException e){ return serviceExceptions(e); }
     }
 
-    //PUT: /agency/flights/edit/{id}
     @PutMapping("/flights/edit/{id}")
     public ResponseEntity<?>update(@PathVariable Long id, @RequestBody FlightDTO flightDTO){
         try{
@@ -65,7 +61,7 @@ public class FlightController {
         }catch (FlightServiceException e){ return serviceExceptions(e); }
     }
 
-    //DELETE: /agency/flights/delete/{id}
+    //eliminado lógico
     @PatchMapping("/flights/delete/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         try {
@@ -77,7 +73,6 @@ public class FlightController {
         }
     }
 
-    //Post: /agency/flight-booking/new
     @PostMapping("flight-booking/new")
      public ResponseEntity<?> create(@RequestBody FlightBookingDTO flightBookingDTO){
             try{
