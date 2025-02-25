@@ -26,7 +26,7 @@ public class User {
     @JsonIgnore
     private HotelBooking booking;
 
-//    @ManyToOne
-//    @JsonIgnore
-//    private FlightBooking reserve;
+    @ManyToOne
+    @JsonIgnore
+    private FlightBooking reserve;
 }

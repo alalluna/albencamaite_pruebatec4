@@ -20,21 +20,15 @@ public class FlightController {
     //GET: /agency/flights → Todos los vuelos
     //    /agency/flights?dateFrom=dd/mm/aaaa&dateTo=dd/mm/aaaa&origin="ciudad1"&destination="ciudad2"
     @GetMapping({"/flights/", "/flights"})
-    public ResponseEntity<?> all(@RequestParam(required = false) String dateFrom,
+    public ResponseEntity<?> showFlights (@RequestParam(required = false) String dateFrom,
                                  @RequestParam(required = false) String dateTo,
                                  @RequestParam(required = false) String origin,
                                  @RequestParam(required = false) String destination) {
         try {
-            if (dateFrom != null && origin != null && destination != null && dateTo != null) {
-                // Vuelo de ida y vuelta
+            if (dateFrom != null && origin != null && destination != null) {
                 List<FlightDTO> listOfObjects = service.filterFlights(dateFrom, dateTo, origin, destination);
                 return ResponseEntity.ok(listOfObjects);
-            } else if (dateFrom != null && origin != null && destination != null) {
-                // Vuelo solo de ida
-                List<FlightDTO> listOfObjects = service.filterFlights(dateFrom,null, origin, destination);
-                return ResponseEntity.ok(listOfObjects);
             } else {
-                // Obtener todos los vuelos
                 List<FlightDTO> listOfObjects = service.list();
                 return ResponseEntity.ok(listOfObjects);
             }
@@ -84,6 +78,7 @@ public class FlightController {
     }
 
     //Post: /agency/flight-booking/new
+    @PostMapping("flight-booking/new")
      public ResponseEntity<?> create(@RequestBody FlightBookingDTO flightBookingDTO){
             try{
                FlightBookingDTO object = service.createBooking(flightBookingDTO);

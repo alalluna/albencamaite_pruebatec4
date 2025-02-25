@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDate;
 import java.util.List;
 
-public class FlightServiceValidation {
+public class FlightServiceValidations {
     public static void validateDTO(FlightDTO flightDTO) {
         if(flightDTO.getFlightName() == null || flightDTO.getFlightName().isBlank()){
             throw new FlightServiceException( "El nombre de la compañía es obligatorio", HttpStatus.BAD_REQUEST.value());

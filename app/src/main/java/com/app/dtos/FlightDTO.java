@@ -1,6 +1,7 @@
 package com.app.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,4 +36,8 @@ public class FlightDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd/MM/yyyy")
     @JsonProperty("date")
     private LocalDate dateFrom; //“dd/mm/yyyy”
+
+    @JsonIgnore
+    @JsonProperty("isBooked")
+    private boolean Booked;
 }

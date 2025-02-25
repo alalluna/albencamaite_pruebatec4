@@ -36,5 +36,5 @@ public class FlightBookingDTO {
     private String typeOfSeat;
 
     @JsonProperty("passengers")
-    private List<User> clients= new ArrayList<>();
+    private List<UserDTO> clients = new ArrayList<>();
 }

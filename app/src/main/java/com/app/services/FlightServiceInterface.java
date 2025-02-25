@@ -19,7 +19,7 @@ public interface FlightServiceInterface {
     void validateNonDuplicateFlight(Flight flight);
     List<Flight>getTrueList();
     boolean compareObjects(Flight objectOne, Flight objectTwo);
-    void updateHotelData(Flight flight,FlightDTO flightDTO);
+    void updateFlightData(Flight flight,FlightDTO flightDTO);
 
     //conversores
     FlightDTO mapToDTO(Flight flight);

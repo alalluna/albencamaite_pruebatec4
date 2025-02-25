@@ -2,12 +2,14 @@ package com.app.services;
 
 import com.app.dtos.FlightBookingDTO;
 import com.app.dtos.FlightDTO;
-import com.app.entities.Flight;
+import com.app.dtos.UserDTO;
+import com.app.entities.*;
 import com.app.repositories.FlightRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,15 +22,8 @@ public class FlightService implements FlightServiceInterface{
 
     @Override
     public List<FlightDTO> list() {
-        List<Flight> listOfElements = repository.findAll().stream()
-                .filter(Flight::isAvailable)
-                .filter(flight-> !flight.isBooked())
-                .toList();
-
-        if (listOfElements.isEmpty()) {
-            throw new FlightServiceException("No hay vuelos disponibles", HttpStatus.NOT_FOUND.value());
-        }
-
+    List<Flight> listOfElements = getTrueList();
+        FlightServiceValidations.validateNonEmptyList(listOfElements);
         return listOfElements.stream().map(this::mapToDTO).toList();
     }
 
@@ -39,24 +34,16 @@ public class FlightService implements FlightServiceInterface{
         if (flightOptional.isEmpty()) {
             throw new FlightServiceException("Vuelo " + id + " no encontrado", HttpStatus.NOT_FOUND.value());
         }
-
         Flight flight = flightOptional.get();
-
-        if (!flight.isAvailable()) {
-            throw new FlightServiceException("Vuelo " + id + " eliminado, selecciona otro", HttpStatus.NOT_FOUND.value());
-        }
-
-        if (flight.isBooked()) {
-            throw new FlightServiceException("Vuelo " + id + " no disponible actualmente", HttpStatus.NOT_FOUND.value());
-        }
-
+        FlightServiceValidations.validateAvailability(flight,id);
+        FlightServiceValidations.validateNonBooked(flight,id);
         return mapToDTO(flight);
     }
 
     @Override
     public FlightDTO create(FlightDTO flightDTO) {
-        FlightServiceValidation.validateDTO(flightDTO);
-        FlightServiceValidation.validateObjectDate(flightDTO);
+        FlightServiceValidations.validateDTO(flightDTO);
+        FlightServiceValidations.validateObjectDate(flightDTO);
         Flight flight = mapToEntity(flightDTO);
         validateNonDuplicateFlight(flight);
         Flight savedObject = repository.save(flight);
@@ -65,49 +52,142 @@ public class FlightService implements FlightServiceInterface{
 
     @Override
     public FlightDTO update(Long id, FlightDTO flightDTO) {
-        return null;
+        Flight flight = repository.findById(id)
+                        .orElseThrow(() -> new FlightServiceException("Vuelo " + id +" no encontrado", HttpStatus.NOT_FOUND.value()));
+
+        FlightServiceValidations.validateAvailability(flight, id);
+        FlightServiceValidations.validateNonBooked(flight, id);
+        updateFlightData(flight, flightDTO);
+        FlightServiceValidations.validateObjectDate(flightDTO);
+        Flight updatedObject = repository.save(flight);
+        return mapToDTO(updatedObject);
     }
 
     @Override
     public void delete(Long id) {
         Flight flight = repository.findById(id)
                 .orElseThrow(() -> new FlightServiceException("Vuelo " + id + " no encontrado", HttpStatus.NOT_FOUND.value()));
-
-        if(!flight.isAvailable()){
-            throw new FlightServiceException("Vuelo " + id + " eliminado.", HttpStatus.BAD_REQUEST.value());
-        }
-
+        FlightServiceValidations.validateAvailability(flight,id);
+        FlightServiceValidations.validateNonBooked(flight,id);
         flight.setAvailable(false);
         repository.save(flight);
     }
 
     @Override
     public List<FlightDTO> filterFlights(String dateFrom, String dateTo, String origin, String destination) {
-        return List.of();
+        LocalDate firstDate = DateUtilService.parseDate(dateFrom);
+        LocalDate secondDate = (dateTo != null && !dateTo.isBlank()) ? DateUtilService.parseDate(dateTo) : null;
+        List<Flight> flights = new ArrayList<>(getTrueList().stream()
+                .filter(flight -> flight.getCityFrom().equalsIgnoreCase(origin))
+                .filter(flight -> flight.getCityDestination().equalsIgnoreCase(destination))
+                .filter(flight -> flight.getDateFrom().isEqual(firstDate))
+                .toList());
+
+        if (secondDate != null) {
+            List<Flight> returnFlights = getTrueList().stream()
+                    .filter(flight -> flight.getCityFrom().equalsIgnoreCase(destination))
+                    .filter(flight -> flight.getCityDestination().equalsIgnoreCase(origin))
+                    .filter(flight -> flight.getDateFrom().isEqual(secondDate))
+                    .toList();
+            flights.addAll(returnFlights);
+        }
+
+        FlightServiceValidations.validateNonEmptyList(flights);
+        return flights.stream().map(this::mapToDTO).toList();
     }
 
     @Override
     public FlightBookingDTO createBooking(FlightBookingDTO flightBookingDTO) {
-        return null;
+        Flight flight = findAvailableFlight(flightBookingDTO);
+        flight.setBooked(true);
+
+        FlightBooking newBooking = createNewBooking(flightBookingDTO, flight);
+        List<User> passengers = createGuestList(flightBookingDTO, newBooking);
+
+        newBooking.setPassengers(passengers);
+        flight.getBookings().add(newBooking);
+        repository.save(flight);
+
+        return buildReserveDTO(newBooking, flight, passengers);
+    }
+
+    private Flight findAvailableFlight(FlightBookingDTO flightBookingDTO) {
+        return getTrueList().stream()
+                .filter(flight -> flight.getCityFrom().equalsIgnoreCase(flightBookingDTO.getCityFrom()))
+                .filter ( flight ->flight.getCityDestination().equalsIgnoreCase(flightBookingDTO.getCityDestination()))
+                .filter(flight -> flight.getDateFrom().isEqual(flightBookingDTO.getDateFrom()))
+                .findFirst()
+                .orElseThrow(() -> new FlightServiceException( "No hay vuelos disponibles con los criterios especificados", HttpStatus.NOT_FOUND.value()
+                ));
+    }
+
+    private FlightBooking createNewBooking(FlightBookingDTO flightBookingDTO, Flight flight) {
+        FlightBooking newBooking = new FlightBooking();
+        newBooking.setFlight(flight);
+        newBooking.setFlightDate(flightBookingDTO.getDateFrom());
+        newBooking.setSeatType(flightBookingDTO.getTypeOfSeat());
+        return newBooking;
+    }
+
+    private List<User> createGuestList(FlightBookingDTO flightBookingDTO, FlightBooking reserve) {
+        return flightBookingDTO.getClients().stream()
+                .map(dto -> new User(null, dto.getCompleteName(), dto.getContact(), null, reserve))
+                .toList();
+    }
+
+    private FlightBookingDTO buildReserveDTO(FlightBooking reserve, Flight flight, List<User> clients) {
+        List<UserDTO> clientsDTOs = clients.stream()
+                .map(user -> new UserDTO(user.getCompleteName(), user.getContact()))
+                .toList();
+
+        return new FlightBookingDTO(
+                reserve.getFlightDate(),
+                flight.getCityFrom(),
+                flight.getCityDestination(),
+                flight.getCode(),
+                clients.size(),
+                reserve.getSeatType(),
+                clientsDTOs
+        );
     }
 
     @Override
     public void validateNonDuplicateFlight(Flight flight) {
-
+        boolean exist = repository.findAll().stream()
+                .anyMatch(oldObject ->compareObjects(oldObject, flight));
+        if(exist){
+            throw new FlightServiceException("Ya existe un vuelo igual, hable con supervisión", HttpStatus.CONFLICT.value());
+        }
     }
 
     @Override
     public List<Flight> getTrueList() {
-        return List.of();
+        return repository.findAll().stream()
+                .filter(Flight::isAvailable)
+                .filter(flight -> !flight.isBooked())
+                .toList();
     }
 
     @Override
     public boolean compareObjects(Flight objectOne, Flight objectTwo) {
-        return false;
+        return objectOne.getFlightName().equalsIgnoreCase(objectTwo.getFlightName()) &&
+                objectOne.getCityFrom().equalsIgnoreCase(objectTwo.getCityFrom()) &&
+                objectOne.getCityDestination().equalsIgnoreCase(objectTwo.getCityDestination()) &&
+                objectOne.getTypeOfSeat().equalsIgnoreCase(objectTwo.getTypeOfSeat()) &&
+                objectOne.getPrice().equals(objectTwo.getPrice()) &&
+                objectOne.getDateFrom().isEqual(objectTwo.getDateFrom());
     }
 
     @Override
-    public void updateHotelData(Flight flight, FlightDTO flightDTO) {
+    public void updateFlightData(Flight flight, FlightDTO flightDTO) {
+        flight.setCode(flightDTO.getCode());
+        flight.setFlightName(flightDTO.getFlightName());
+        flight.setCityFrom(flightDTO.getCityFrom());
+        flight.setCityDestination(flightDTO.getCityDestination());
+        flight.setTypeOfSeat(flight.getTypeOfSeat());
+        flight.setPrice(flightDTO.getPrice());
+        flight.setDateFrom(flightDTO.getDateFrom());
+        flight.setBooked(flightDTO.isBooked());
 
     }
 
@@ -120,7 +200,8 @@ public class FlightService implements FlightServiceInterface{
                 flight.getCityDestination(),
                 flight.getTypeOfSeat(),
                 flight.getPrice(),
-                flight.getDateFrom()
+                flight.getDateFrom(),
+                flight.isBooked()
         );
     }
 

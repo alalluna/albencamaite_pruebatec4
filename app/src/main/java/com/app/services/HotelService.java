@@ -131,7 +131,7 @@ public class HotelService implements HotelServiceInterface {
 
     private List<User> createGuestList(HotelBookingDTO hotelBookingDTO, HotelBooking booking) {
         return hotelBookingDTO.getGuests().stream()
-                .map(dto -> new User(null, dto.getCompleteName(), dto.getContact(), booking))
+                .map(dto -> new User(null, dto.getCompleteName(), dto.getContact(), booking, null))
                 .toList();
     }
 

@@ -21,7 +21,7 @@ public class FlightBooking {
     @ManyToOne
     private Flight flight;
 
-    @ManyToMany
+    @OneToMany(mappedBy = "reserve", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<User> passengers;
 
     private LocalDate flightDate;
