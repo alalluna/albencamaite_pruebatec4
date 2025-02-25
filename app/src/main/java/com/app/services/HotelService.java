@@ -59,16 +59,13 @@ public class HotelService implements HotelServiceInterface {
 
         Hotel hotel = hotelOptional.get();
         HotelServiceValidations.validateAvailability(hotel, id);
-        HotelServiceValidations.validateNonBooked(hotel, id);
         return mapToDTO(hotel);
     }
 
     @Override
     public HotelDTO create(HotelDTO hotelDTO) {
-        HotelServiceValidations.validateDTO(hotelDTO);
-        HotelServiceValidations.validateObjectDates(hotelDTO);
+        HotelServiceValidations.validateHotelDTOData(hotelDTO);
         Hotel hotel = mapToEntity(hotelDTO);
-
         hotel.setCode(CodeGeneratorService.generateHotelCode(hotel.getHotelName(), hotel.getCity(), hotel.getTypeRoom()));
         validateNonDuplicateHotel(hotel);
         Hotel savedObject = repository.save(hotel);
@@ -81,11 +78,9 @@ public class HotelService implements HotelServiceInterface {
                 .orElseThrow(() -> new HotelServiceException("Habitación " + id +" no encontrada", HttpStatus.NOT_FOUND.value()));
 
         HotelServiceValidations.validateAvailability(hotel, id);
-        HotelServiceValidations.validateNonBooked(hotel, id);
         updateHotelData(hotel, hotelDTO);
-
         hotel.setCode(CodeGeneratorService.generateHotelCode(hotel.getHotelName(), hotel.getCity(), hotel.getTypeRoom()));
-        HotelServiceValidations.validateObjectDates(hotelDTO);
+        HotelServiceValidations.validateHotelDTOData(hotelDTO);
         Hotel updatedObject = repository.save(hotel);
         return mapToDTO(updatedObject);
     }
@@ -96,7 +91,6 @@ public class HotelService implements HotelServiceInterface {
                 .orElseThrow(() -> new HotelServiceException("Habitación " + id + " no encontrada", HttpStatus.NOT_FOUND.value()));
 
         HotelServiceValidations.validateAvailability(hotel, id);
-        HotelServiceValidations.validateNonBooked(hotel, id);
         hotel.setAvailable(false);
         repository.save(hotel);
     }
@@ -238,7 +232,7 @@ public class HotelService implements HotelServiceInterface {
     public Hotel mapToEntity(HotelDTO hotelDTO) {
         return new Hotel(
                 null,
-                hotelDTO.getCode(),
+                null,
                 hotelDTO.getHotelName(),
                 hotelDTO.getCity(),
                 hotelDTO.getTypeRoom(),

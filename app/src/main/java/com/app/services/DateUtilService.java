@@ -1,5 +1,7 @@
 package com.app.services;
 
+import org.springframework.http.HttpStatus;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -32,6 +34,15 @@ public class DateUtilService {
         }
 
         return days;
+    }
+
+    public static void validateDates(LocalDate dateFrom, LocalDate dateTo) {
+        if (dateTo != null && dateFrom.isAfter(dateTo)) {
+            throw new DateException("La fecha de inicio no puede ser posterior a la fecha de fin", HttpStatus.BAD_REQUEST.value());
+        }
+        if (dateFrom.isBefore(LocalDate.now()) || (dateTo != null && dateTo.isBefore(LocalDate.now()))) {
+            throw new DateException("Las fechas deben ser futuras", HttpStatus.BAD_REQUEST.value());
+        }
     }
 }
 

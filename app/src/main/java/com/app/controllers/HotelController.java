@@ -86,7 +86,6 @@ public class HotelController {
         }catch (HotelServiceException e){ return serviceExceptions(e); }
     }
 
-
     private ResponseEntity<ErrorDTO> serviceExceptions(HotelServiceException e) {
         return ResponseEntity.status(e.getError().getStatus()).body(e.getError());
     }

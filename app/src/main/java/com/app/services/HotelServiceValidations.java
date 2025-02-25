@@ -4,7 +4,6 @@ import com.app.dtos.HotelDTO;
 import com.app.entities.Hotel;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public class HotelServiceValidations {
@@ -21,17 +20,10 @@ public class HotelServiceValidations {
         }
     }
 
-    public static void validateDates(LocalDate dateFrom, LocalDate dateTo) {
-        if (dateFrom.isAfter(dateTo)) {
-            throw new HotelServiceException("La fecha de inicio no puede ser posterior a la fecha de fin", HttpStatus.BAD_REQUEST.value());
-        }
-        if (dateFrom.isBefore(LocalDate.now()) || dateTo.isBefore(LocalDate.now())) {
-            throw new HotelServiceException("Las fechas deben ser futuras", HttpStatus.BAD_REQUEST.value());
-        }
-    }
+    public static void validateHotelDTOData(HotelDTO hotelDTO){
+        validateDTO(hotelDTO);
+        DateUtilService.validateDates(hotelDTO.getDateFrom(), hotelDTO.getDateTo());
 
-    public static void validateObjectDates(HotelDTO hotelDTO){
-        validateDates(hotelDTO.getDateFrom(), hotelDTO.getDateTo());
     }
 
     public static void validateNonEmptyList(List<Hotel> list) {
@@ -40,15 +32,12 @@ public class HotelServiceValidations {
         }
     }
 
-    public static void validateNonBooked(Hotel hotel, Long id){
-        if (hotel.isBooked()) {
-            throw new HotelServiceException("Habitación " + id +" reservada, si desea eliminar/modificar contacte con supervisión", HttpStatus.NOT_FOUND.value());
-        }
-    }
-
     public static void validateAvailability(Hotel hotel, Long id) {
         if (!hotel.isAvailable()) {
             throw new HotelServiceException("Habitación " + id + " eliminada si desea recuperarla contacte con supervisión", HttpStatus.NOT_FOUND.value());
+        }
+        if (hotel.isBooked()) {
+            throw new HotelServiceException("Habitación " + id +" reservada, si desea eliminar/modificar contacte con supervisión", HttpStatus.NOT_FOUND.value());
         }
     }
 }

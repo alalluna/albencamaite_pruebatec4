@@ -22,7 +22,7 @@ public class FlightService implements FlightServiceInterface{
 
     @Override
     public List<FlightDTO> list() {
-    List<Flight> listOfElements = getTrueList();
+        List<Flight> listOfElements = getTrueList();
         FlightServiceValidations.validateNonEmptyList(listOfElements);
         return listOfElements.stream().map(this::mapToDTO).toList();
     }
@@ -36,14 +36,12 @@ public class FlightService implements FlightServiceInterface{
         }
         Flight flight = flightOptional.get();
         FlightServiceValidations.validateAvailability(flight,id);
-        FlightServiceValidations.validateNonBooked(flight,id);
         return mapToDTO(flight);
     }
 
     @Override
     public FlightDTO create(FlightDTO flightDTO) {
-        FlightServiceValidations.validateDTO(flightDTO);
-        FlightServiceValidations.validateObjectDate(flightDTO);
+        FlightServiceValidations.validateFlightDTOData(flightDTO);
         Flight flight = mapToEntity(flightDTO);
         flight.setCode(CodeGeneratorService.generateFlightCode(flight.getCityFrom(), flight.getCityDestination(), flight.getTypeOfSeat()));
         validateNonDuplicateFlight(flight);
@@ -54,14 +52,13 @@ public class FlightService implements FlightServiceInterface{
     @Override
     public FlightDTO update(Long id, FlightDTO flightDTO) {
         Flight flight = repository.findById(id)
-                        .orElseThrow(() -> new FlightServiceException("Vuelo " + id +" no encontrado", HttpStatus.NOT_FOUND.value()));
+                .orElseThrow(() -> new FlightServiceException("Vuelo " + id +" no encontrado", HttpStatus.NOT_FOUND.value()));
 
         FlightServiceValidations.validateAvailability(flight, id);
-        FlightServiceValidations.validateNonBooked(flight, id);
         updateFlightData(flight, flightDTO);
 
         flight.setCode(CodeGeneratorService.generateFlightCode(flight.getCityFrom(), flight.getCityDestination(), flight.getTypeOfSeat()));
-        FlightServiceValidations.validateObjectDate(flightDTO);
+        FlightServiceValidations.validateFlightDTOData(flightDTO);
         Flight updatedObject = repository.save(flight);
         return mapToDTO(updatedObject);
     }
@@ -71,7 +68,6 @@ public class FlightService implements FlightServiceInterface{
         Flight flight = repository.findById(id)
                 .orElseThrow(() -> new FlightServiceException("Vuelo " + id + " no encontrado", HttpStatus.NOT_FOUND.value()));
         FlightServiceValidations.validateAvailability(flight,id);
-        FlightServiceValidations.validateNonBooked(flight,id);
         flight.setAvailable(false);
         repository.save(flight);
     }
@@ -212,7 +208,7 @@ public class FlightService implements FlightServiceInterface{
     public Flight mapToEntity(FlightDTO flightDTO) {
         return new Flight(
                 null,
-                flightDTO.getCode(),
+                null,//genero el codigo con el metodo
                 flightDTO.getFlightName(),
                 flightDTO.getCityFrom(),
                 flightDTO.getCityDestination(),

@@ -33,8 +33,9 @@ public class FlightServiceValidations {
         }
     }
 
-    public static void validateObjectDate(FlightDTO flightDTO){
-            validateDate(flightDTO.getDateFrom());
+    public static void validateFlightDTOData(FlightDTO flightDTO){
+        validateDTO(flightDTO);
+        DateUtilService.validateDates(flightDTO.getDateFrom(),null);
         }
 
     public static void validateNonEmptyList(List<Flight> list) {
@@ -43,15 +44,12 @@ public class FlightServiceValidations {
         }
     }
 
-    public static void validateNonBooked(Flight flight, Long id){
-        if (flight.isBooked()) {
-            throw new FlightServiceException("vuelo " + id +" reservado, si desea eliminar/modificar contacte con supervisión", HttpStatus.NOT_FOUND.value());
-        }
-    }
-
     public static void validateAvailability(Flight flight, Long id) {
         if (!flight.isAvailable()) {
             throw new HotelServiceException("Vuelo " + id + " eliminado si desea recuperarlo contacte con supervisión", HttpStatus.NOT_FOUND.value());
+        }
+        if (flight.isBooked()) {
+            throw new FlightServiceException("vuelo " + id +" reservado, si desea eliminar/modificar contacte con supervisión", HttpStatus.NOT_FOUND.value());
         }
     }
 }

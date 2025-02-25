@@ -38,6 +38,7 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
     - HotelBookingDTO.java
     - FlightBookingDTO.java
     - UserDTO.java
+    - HotelSummaryDTO.java
 
 ## CONFIG
     - SecurityConfig.java 🚦 
@@ -65,15 +66,12 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 ## LÓGICA DE NEGOCIO
 
  ### MÉTODOS LIST: listan objetos "habilitados" (Se muestran los habilitados y disponibles para las reservas) 
-    Se filtran los elementos habitilados y no reservados(getTrueList)
+    Se filtran los habitaciones de hotel y vuelos habilitados y no reservados(getTrueList)
     Si la lista esta vacia lanza excepcion y el controlador devuelve el ErroDTO(validateNonEmptyList)
-    
 
  ### MÉTODOS FINDONE: muestran un objeto "habilitados" y disponible 
-    Si no lanza excepciones : si no existe en bbdd. 
-    Si no esta habilitada (validateAvailability).
-    O si ya esta reservada (validateNonBooked).
- 
+    Como yo me plantee que la logica estaba centrada en habitaciones de hotel y vuelos, esta busqueda representa estos objetos.
+    Si no existe lanza excepciones : si no existe en bbdd, si no esta habilitada (validateAvailability) o si ya esta reservada (validateNonBooked).
 
 ### MÉTODOS DELETE: cambiar el boolean Available a false para que quede en la base de datos
     Si no existe el objeto lanza excepción, si existe y ya está inhabilitado tambien.
@@ -127,6 +125,7 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 ### EXCEPTIONS: Excepciones personalizadas que permiten personalizar los mensajes de error.
     Constan del mensaje en cuestión y el codigo de error. En controller devuelvo un errorDTO en caso de que haya una excepción.
 
+
  🎉
 
 ---
@@ -173,18 +172,25 @@ https://github.com/alalluna/albencamaite_pruebatec4.git
 
 - He renombrado guests a host porque pensaba que me aclaría mejor si distinguía el nombre de la lista en la creación de la reserva y en la construcción de los dtos que retorna,
   pero en realidad me está liando, como es una lista de huéspedes y empecé llamándole hosts, se quedará así en ambas lógicas, que además están relacionadas directamente. 
+
+- Revisando bien la consigna me di cuenta que malinterpreté la instrucción, yo devolvía una lista de habitaciones y una de vuelos.
+  Pero el planteamiento dice mostrar una lista de los hoteles registrados, por lo que he añadido un DTO y un método que extrae esa info.
+
+- Después del trabajo realizado me doy cuenta de las carencias que tiene el programa, igual que si hago una reserva de una oferta determinada, la oferta se bloquea y aparece reservada
+  lo mismo ocurre en vuelos, con lo que si hago una reserva, puede incluir una cantidad de personas dentro de esa reserva y esa reserva se bloquea porque se pone como "booked = True"
+  Plantearme este cambio implicaría un generar una nueva estructura y relaciones por lo que no implementaré esto, aunque podría mejorar sustancialmente la api.
+
 ---
 ### TEST UNITARIO 🛠️
 
 ---
 
 
-Extra (sugerencias)
-A continuación se sugiere una serie de test unitarios a llevar a cabo; sin embargo, en caso de que se considere necesario implementar otros, esto es totalmente viable.
-Implementación de 1 TEST UNITARIO
-⚠️ Nota: Tener en cuenta que los datos de entrada pueden variar dependiendo del modelado que haya sido realizado por cada desarrollador. En caso de corresponder, realizar las modificaciones/adaptaciones correspondientes necesarias en los tests unitarios sugeridos.
 ###  🏃‍♂️
 
 
-¡Felicidades! 🎉ya tienes tu marckdown 🐳🔥
+🎉 ¡Gracias por todo Hack a boss!  🐳🔥
+
+**`hotel.getPrice().toString(),`**
+**`hotel.getPrice().toString(),`** 
 
