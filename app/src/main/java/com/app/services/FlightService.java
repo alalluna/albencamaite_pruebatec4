@@ -35,7 +35,7 @@ public class FlightService implements FlightServiceInterface{
             throw new FlightServiceException("Vuelo " + id + " no encontrado", HttpStatus.NOT_FOUND.value());
         }
         Flight flight = flightOptional.get();
-        FlightServiceValidations.validateAvailability(flight,id);
+        FlightServiceValidations.validateExist(flight,id);
         return mapToDTO(flight);
     }
 
@@ -170,6 +170,7 @@ public class FlightService implements FlightServiceInterface{
     @Override
     public boolean compareObjects(Flight objectOne, Flight objectTwo) {
         return objectOne.getFlightName().equalsIgnoreCase(objectTwo.getFlightName()) &&
+                //objectOne.getCode().equalsIgnoreCase(objectTwo.getCode()) &&
                 objectOne.getCityFrom().equalsIgnoreCase(objectTwo.getCityFrom()) &&
                 objectOne.getCityDestination().equalsIgnoreCase(objectTwo.getCityDestination()) &&
                 objectOne.getTypeOfSeat().equalsIgnoreCase(objectTwo.getTypeOfSeat()) &&

@@ -19,10 +19,15 @@ public class HotelController {
     HotelServiceInterface service;
 
     @GetMapping({"/hotels/","/hotels"})
-    public ResponseEntity<?> showHotels(){
+    public ResponseEntity<?> showHotels(@RequestParam (required=false) String hotelName){
         try{
+            if(hotelName != null){
+                List<HotelDTO> listOfObjects = service.listByHotel(hotelName);
+                return ResponseEntity.ok(listOfObjects);
+            }else{
             List<HotelSummaryDTO>  listOfObjects = service.listHotelsSummary();;
             return ResponseEntity.ok(listOfObjects);
+            }
         } catch (HotelServiceException e){ return serviceExceptions(e); }
     }
 
@@ -73,10 +78,17 @@ public class HotelController {
         try {
             service.delete(id);
             return ResponseEntity.ok("Habitación " + id + " eliminada correctamente.");
-        } catch (HotelServiceException e){
-            return serviceExceptions(e);
-        }
+        } catch (HotelServiceException e){ return serviceExceptions(e); }
     }
+
+    //eliminar todas las habitaciones del hotel
+      @DeleteMapping("/hotels/delete/{hotelName}")
+        public ResponseEntity<?> deleteAllHotel(@PathVariable String hotelName) {
+            try {
+                service.deleteAllHotel(hotelName);
+                return ResponseEntity.ok("Hotel " + hotelName + " eliminado correctamente.");
+            } catch (HotelServiceException e){ return serviceExceptions(e); }
+        }
 
     @PostMapping("/room-booking/new")
     public ResponseEntity<?> create(@RequestBody HotelBookingDTO hotelBookingDTO){

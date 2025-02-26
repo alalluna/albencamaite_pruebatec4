@@ -24,9 +24,11 @@ public class User {
     //cambio en la relacion
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "hotel_booking_id")
     private HotelBooking booking;
 
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "flight_booking_id")
     private FlightBooking reserve;
 }

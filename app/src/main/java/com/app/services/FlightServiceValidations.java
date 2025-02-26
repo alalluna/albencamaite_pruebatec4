@@ -45,11 +45,14 @@ public class FlightServiceValidations {
     }
 
     public static void validateAvailability(Flight flight, Long id) {
-        if (!flight.isAvailable()) {
-            throw new HotelServiceException("Vuelo " + id + " eliminado si desea recuperarlo contacte con supervisión", HttpStatus.NOT_FOUND.value());
-        }
+       validateExist(flight ,id);
         if (flight.isBooked()) {
             throw new FlightServiceException("vuelo " + id +" reservado, si desea eliminar/modificar contacte con supervisión", HttpStatus.NOT_FOUND.value());
+        }
+    }
+    public static void validateExist(Flight flight, Long id){
+        if (!flight.isAvailable()) {
+            throw new HotelServiceException("Vuelo " + id + " eliminado si desea recuperarlo contacte con supervisión", HttpStatus.NOT_FOUND.value());
         }
     }
 }

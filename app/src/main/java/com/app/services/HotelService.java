@@ -13,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,21 +23,39 @@ public class HotelService implements HotelServiceInterface {
     HotelRepositoryInterface repository;
 
     @Override
+    //para obtener una lista de hoteles
     public List<HotelSummaryDTO> listHotelsSummary() {
-        return repository.findAll().stream()
-                .collect(Collectors.groupingBy(Hotel::getHotelName))
-                .entrySet().stream()
-                .map(entry -> {
-                    String hotelName = entry.getKey();
-                    List<Hotel> hotels = entry.getValue();
-                    String city = hotels.get(0).getCity(); // Suponiendo que todas las habitaciones del hotel tienen la misma ciudad
+        List<Hotel> hotels = repository.findAll();
+        Map<String, HotelSummaryDTO> summaryMap = new HashMap<>();
 
-                    List<String> roomCodes = hotels.stream().map(Hotel::getCode).distinct().toList();
-                    List<String> roomTypes = hotels.stream().map(Hotel::getTypeRoom).distinct().toList();
+        for (Hotel hotel : hotels) {
+            String hotelName = hotel.getHotelName();
+            String city = hotel.getCity();
+            String roomCode = hotel.getCode();
+            String roomType = hotel.getTypeRoom();
 
-                    return new HotelSummaryDTO(hotelName, city, roomCodes, roomTypes);
-                })
-                .toList();
+            if (!summaryMap.containsKey(hotelName)) {
+                summaryMap.put(hotelName, new HotelSummaryDTO(hotelName, city, new ArrayList<>(), new ArrayList<>()));
+            }
+
+            HotelSummaryDTO summary = summaryMap.get(hotelName);
+
+            if (!summary.getRoomCodes().contains(roomCode)) {
+                summary.getRoomCodes().add(roomCode);
+            }
+            if (!summary.getRoomTypes().contains(roomType)) {
+                summary.getRoomTypes().add(roomType);
+            }
+        }
+
+        return new ArrayList<>(summaryMap.values());
+    }
+
+    @Override
+    public List<HotelDTO> listByHotel(String hotelName) {
+        List<Hotel> listOfElements = getTrueList().stream().filter(
+                hotel -> hotel.getHotelName().equalsIgnoreCase(hotelName)).toList();
+        return listOfElements.stream().map(this::mapToDTO).toList();
     }
 
     @Override
@@ -58,7 +74,7 @@ public class HotelService implements HotelServiceInterface {
         }
 
         Hotel hotel = hotelOptional.get();
-        HotelServiceValidations.validateAvailability(hotel, id);
+        HotelServiceValidations.validateExist(hotel, id);
         return mapToDTO(hotel);
     }
 
@@ -93,6 +109,19 @@ public class HotelService implements HotelServiceInterface {
         HotelServiceValidations.validateAvailability(hotel, id);
         hotel.setAvailable(false);
         repository.save(hotel);
+    }
+
+    @Override
+    public void deleteAllHotel(String hotelName) {
+        // Filtramos los hoteles con el nombre que pasa como argumento.
+        List<Hotel> listOfElements = getTrueList().stream()
+                .filter(hotel -> hotel.getHotelName().equalsIgnoreCase(hotelName))
+                .collect(Collectors.toList());
+
+        // Eliminamos los hoteles encontrados de la base de datos o repositorio.
+        for (Hotel hotel : listOfElements) {
+            repository.delete(hotel);
+        }
     }
 
     @Override
@@ -232,7 +261,7 @@ public class HotelService implements HotelServiceInterface {
     public Hotel mapToEntity(HotelDTO hotelDTO) {
         return new Hotel(
                 null,
-                null,
+                null,//ya no hace falta porque lo genera automaticamente
                 hotelDTO.getHotelName(),
                 hotelDTO.getCity(),
                 hotelDTO.getTypeRoom(),

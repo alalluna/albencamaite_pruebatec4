@@ -1,0 +1,267 @@
+{
+	"info": {
+		"_postman_id": "ad845a38-0dde-4ad2-a9c1-95ae0fd0b93a",
+		"name": "Travel Agency Flights",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37141470"
+	},
+	"item": [
+		{
+			"name": "ver Vuelos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/agency/flights",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"flights"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ver vuelo por  id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/agency/flights/11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"flights",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "crear vuelo",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Eliminar\",\r\n  \"origin\": \"Sevilla\",\r\n  \"destination\": \"Manises\",\r\n  \"seatType\": \"Economy\",\r\n  \"flightPrice\": 100,\r\n  \"date\": \"26/03/2025\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/flights/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"flights",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "editar vuelo",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Eliminar\",\r\n    \"origin\": \"Madrid\",\r\n    \"destination\": \"Sevilla\",\r\n    \"seatType\": \"Economy\",\r\n    \"flightPrice\": 100.0,\r\n    \"date\": \"26/03/2025\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/flights/edit/11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"flights",
+						"edit",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "buscar vuelos por fechas y destino",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/agency/flights?dateFrom=28%2F02%2F2025&origin=Barcelona&destination=Miami",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"flights"
+					],
+					"query": [
+						{
+							"key": "dateFrom",
+							"value": "28%2F02%2F2025"
+						},
+						{
+							"key": "origin",
+							"value": "Barcelona"
+						},
+						{
+							"key": "destination",
+							"value": "Miami"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "crear reserva",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date\": \"14/03/2025\",\r\n  \"Origin\": \"Bogota\",\r\n  \"destination\": \"Buenos Aires\",\r\n  \"peopleQ\": 2,\r\n  \"seatType\": \"Economy\",\r\n  \"passengers\": [\r\n    {\r\n      \"completeName\": \"Felix Rodriguez\",\r\n      \"contact\": \"985746382\"\r\n    }, {\r\n      \"completeName\": \"silvia Marco\",\r\n      \"contact\": \"985746382\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/flight-booking/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"flight-booking",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eliminar vuelo",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/flights/delete/15",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"flights",
+						"delete",
+						"15"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

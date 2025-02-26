@@ -10,11 +10,13 @@ import java.util.List;
 
 public interface HotelServiceInterface {
     List<HotelSummaryDTO> listHotelsSummary();
+    List<HotelDTO> listByHotel(String hotelName);
     List<HotelDTO> list();
     HotelDTO findOne(Long id);
     HotelDTO create( HotelDTO hotelDTO);
     HotelDTO update(Long id,  HotelDTO hotelDTO);
     void delete(Long id);
+    void deleteAllHotel (String hotelName);
     List<HotelDTO> filterHotels(String dateFrom, String dateTo, String destination);
     HotelBookingDTO createBooking(HotelBookingDTO hotelBookingDTO);
 

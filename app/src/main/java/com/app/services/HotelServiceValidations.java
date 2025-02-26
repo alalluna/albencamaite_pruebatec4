@@ -33,11 +33,14 @@ public class HotelServiceValidations {
     }
 
     public static void validateAvailability(Hotel hotel, Long id) {
-        if (!hotel.isAvailable()) {
-            throw new HotelServiceException("Habitación " + id + " eliminada si desea recuperarla contacte con supervisión", HttpStatus.NOT_FOUND.value());
-        }
+        validateExist(hotel,id);
         if (hotel.isBooked()) {
             throw new HotelServiceException("Habitación " + id +" reservada, si desea eliminar/modificar contacte con supervisión", HttpStatus.NOT_FOUND.value());
+        }
+    }
+    public static void validateExist(Hotel hotel, Long id){
+        if (!hotel.isAvailable()) {
+            throw new HotelServiceException("Habitación " + id + " eliminada si desea recuperarla contacte con supervisión", HttpStatus.NOT_FOUND.value());
         }
     }
 }

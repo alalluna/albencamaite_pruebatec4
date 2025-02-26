@@ -1,0 +1,362 @@
+{
+	"info": {
+		"_postman_id": "c0f2ec44-1c17-4b81-91c0-5700f915fd94",
+		"name": "Travel Agency Hotels",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37141470"
+	},
+	"item": [
+		{
+			"name": "ver Hoteles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/agency/hotels/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"hotels",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ver un hotel por nombre",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/agency/hotels/?hotelName=Grand%20Hyatt",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"hotels",
+						""
+					],
+					"query": [
+						{
+							"key": "hotelName",
+							"value": "Grand%20Hyatt"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ver una habitacion por id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/agency/hotels/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"hotels",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "crear hotel y habitacion",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Eliminarhabitacion\",\r\n  \"place\": \"Alicante\",\r\n  \"roomType\": \"Double\",\r\n  \"roomPrice\": 100,\r\n  \"disponibilityDateFrom\": \"23/04/2025\",\r\n  \"disponibilityDateTo\":  \"25/04/2025\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/hotels/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"hotels",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "editar Habitacion Hotel",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\r\n    \"name\": \"Ritz-Carlton\",\r\n    \"place\": \"Buenos Aires\",\r\n    \"roomType\": \"Single\",\r\n    \"roomPrice\": 300,\r\n    \"disponibilityDateFrom\": \"02/03/2025\",\r\n    \"disponibilityDateTo\": \"05/03/2025\"\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/hotels/edit/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"hotels",
+						"edit",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "buscar hotel por fechas y destino",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/agency/rooms/?dateFrom=02%2F03%2F2025&dateTo=05%2F03%2F2025&destination=Buenos%20Aires",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"rooms",
+						""
+					],
+					"query": [
+						{
+							"key": "dateFrom",
+							"value": "02%2F03%2F2025"
+						},
+						{
+							"key": "dateTo",
+							"value": "05%2F03%2F2025"
+						},
+						{
+							"key": "destination",
+							"value": "Buenos%20Aires"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "buscar disponibles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/agency/rooms",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"rooms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "crear reserva",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"dateFrom\": \"02/03/2025\",\r\n  \"dateTo\": \"03/03/2025\",\r\n  \"place\": \"Buenos Aires\",\r\n  \"roomType\": \"Single\",\r\n  \"hosts\": [\r\n    {\r\n      \"completeName\": \"Sara Martinez\",\r\n      \"contact\": \"23456789\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/room-booking/new",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"room-booking",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eliminar habitacion",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/hotels/delete/13",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"hotels",
+						"delete",
+						"13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eliminar todo un hotel",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "agencyTravel",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "employees",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/agency/hotels/delete/Eliminarhabitacion",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"agency",
+						"hotels",
+						"delete",
+						"Eliminarhabitacion"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
